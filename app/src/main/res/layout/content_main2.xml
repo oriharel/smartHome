@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="niyo.nfc.com.nfcori.Main2Activity"
+    tools:showIn="@layout/activity_main2">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Turn Off Lights"
+        android:id="@+id/offButton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Turn On Lights"
+        android:id="@+id/onButton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tall Off"
+        android:id="@+id/tallOff"
+        android:layout_below="@+id/offButton"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="75dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tall On"
+        android:id="@+id/tallOn"
+        android:layout_alignTop="@+id/tallOff"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sofa Off"
+        android:id="@+id/sofaOff"
+        android:layout_below="@+id/tallOn"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="64dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sofa On"
+        android:id="@+id/sofaOn"
+        android:layout_alignTop="@+id/sofaOff"
+        android:layout_alignEnd="@+id/tallOn"
+        android:singleLine="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Window Off"
+        android:id="@+id/windowOff"
+        android:layout_below="@+id/sofaOff"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="87dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Window On"
+        android:id="@+id/windowOn"
+        android:layout_alignTop="@+id/windowOff"
+        android:layout_alignParentEnd="true"
+        android:singleLine="true" />
+</RelativeLayout>
