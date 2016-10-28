@@ -45,6 +45,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void startService() {
         Intent serviceIntent = new Intent(mContext, HomeStateFetchService.class);
+        serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
+                HomeStateFetchService.LAST_STATE_EVENT_NAME);
         mContext.startService(serviceIntent);
     }
 

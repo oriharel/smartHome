@@ -25,8 +25,24 @@ public class HomeStateFetchService extends Service {
 
     public static final String LOG_TAG = HomeStateFetchService.class.getSimpleName();
     public static final String HOME_URL = "https://oriharel.herokuapp.com";
+    public static final String EVENT_NAMT_EXTRA = "event_name";
+    public static final String STATE_EVENT_NAME = "state";
+    public static final String LAST_STATE_EVENT_NAME = "lastStateForClients";
     Socket mSocket;
     Timer mTimer;
+    private Emitter.Listener stateListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            processEvent(STATE_EVENT_NAME, this, args);
+        }
+    };
+
+    private Emitter.Listener lastStateListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            processEvent(LAST_STATE_EVENT_NAME, this, args);
+        }
+    };
 
     private static HashMap<String, String> sLampNameToMac;
     static {
@@ -45,9 +61,20 @@ public class HomeStateFetchService extends Service {
         try {
 
             mSocket = IO.socket(HOME_URL);
+            final String eventName = intent.getStringExtra(EVENT_NAMT_EXTRA);
 
-            mSocket.on("state", getMessageListener());
-            Log.d(LOG_TAG, "connecting socket on "+HOME_URL);
+            Emitter.Listener listener;
+            if (eventName.equals(STATE_EVENT_NAME)) {
+                listener = stateListener;
+            }
+            else {
+                listener = lastStateListener;
+            }
+
+            final Emitter.Listener finalListener = listener;
+
+            mSocket.on(eventName, listener);
+            Log.d(LOG_TAG, "connecting socket on "+HOME_URL+" and waiting for "+eventName);
             mSocket.connect();
 
             mTimer = new Timer();
@@ -55,8 +82,10 @@ public class HomeStateFetchService extends Service {
             mTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Log.e(LOG_TAG, "time out expired for home state...");
+                    Log.e(LOG_TAG, "time out expired for "+eventName+"...");
                     mSocket.disconnect();
+                    Log.e(LOG_TAG, "unregistering finalListener from "+eventName+" because of timeout");
+                    mSocket.off(eventName, finalListener);
                     stopSelf();
                 }
             }, 60*1000*3);
@@ -68,39 +97,38 @@ public class HomeStateFetchService extends Service {
         return START_STICKY;
     }
 
-    private Emitter.Listener getMessageListener() {
-        return new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                Log.d(LOG_TAG, "received state message from socket");
-                mTimer.cancel();
-                JSONObject state = (JSONObject)args[0];
+    private void processEvent(String eventName, Emitter.Listener listener, Object... args) {
+        Log.d(LOG_TAG, "received "+eventName+" message from socket");
+        mTimer.cancel();
+        JSONObject state = (JSONObject)args[0];
 
-                try {
-                    JSONArray sockets = state.getJSONArray("sockets");
-                    Log.d(LOG_TAG, "sockets: "+sockets);
-                    JSONObject persons = state.getJSONObject("persons");
-                    Log.d(LOG_TAG, "persons: "+persons);
-                    JSONObject tempData = state.getJSONObject("tempData");
-                    Log.d(LOG_TAG, "tempData: "+tempData);
-                    String image = state.getString("image");
+        try {
+            JSONArray sockets = state.getJSONArray("sockets");
+            Log.d(LOG_TAG, "sockets: "+sockets);
+            JSONObject persons = state.getJSONObject("persons");
+            Log.d(LOG_TAG, "persons: "+persons);
+            JSONObject tempData = state.getJSONObject("tempData");
+            Log.d(LOG_TAG, "tempData: "+tempData);
+            String image = state.getString("image");
 
-                    insertStateToDb(sockets, persons, tempData, image);
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, "error processing state: "+state, e);
-                    return;
-                }
+            insertStateToDb(sockets, persons, tempData, image);
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "error processing state: "+state, e);
+            return;
+        }
 
-                Log.d(LOG_TAG, "stopping service now...");
-                mSocket.disconnect();
-                mSocket.off("state", this);
-                stopSelf();
-            }
-        };
+        Log.d(LOG_TAG, "disconnecting socket now...");
+        mSocket.disconnect();
+        Log.d(LOG_TAG, "unregistering listener from "+eventName);
+        mSocket.off(eventName, listener);
+
+        Log.d(LOG_TAG, "stopping service now...");
+        stopSelf();
     }
 
     private void insertStateToDb(JSONArray sockets, JSONObject persons, JSONObject tempData, String image) throws JSONException {
 
+        Log.d(LOG_TAG, "insertStateToDb started");
         ContentValues values = new ContentValues();
 
         JSONObject tallLamp = getLampObject(sockets, sLampNameToMac.get("tallLamp"));

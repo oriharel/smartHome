@@ -78,6 +78,7 @@ public class HarelHomeProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        Log.d(LOG_TAG, "delete is called");
         // Opens the database object in "write" mode.
         SQLiteDatabase db = getWritableDb();
         String finalWhere;
@@ -106,7 +107,6 @@ public class HarelHomeProvider extends ContentProvider {
          * that the incoming URI changed. The object passes this along to the resolver framework,
          * and observers that have registered themselves for the provider are notified.
          */
-        getContext().getContentResolver().notifyChange(uri, null);
 
         // Returns the number of rows deleted.
         return count;
@@ -130,7 +130,7 @@ public class HarelHomeProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
 
         Log.d(LOG_TAG, "insert started "+uri);
         String table = HomeDbHelper.HOME_TABLE;

@@ -14,6 +14,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -23,6 +24,7 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
@@ -59,10 +61,12 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
     public static final String ACCOUNT = "harelAccount";
 
     public static final long SECONDS_PER_MINUTE = 60;
-    public static final long SYNC_INTERVAL_IN_MINUTES = 1;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 5;
     public static final long SYNC_INTERVAL =
             SYNC_INTERVAL_IN_MINUTES *
                     SECONDS_PER_MINUTE;
+    private ContentObserver mObserver;
+    Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +75,6 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        Button offButton = (Button) findViewById(R.id.offButton);
-//        offButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnTheLights("off");
-//            }
-//        });
-//
         Button onButton = (Button) findViewById(R.id.toggleAllHome);
         onButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,57 +85,60 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
 
         setNfcListener();
 
-//        final Button tallLampOn = (Button) findViewById(R.id.tallOn);
-//        tallLampOn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("tallLamp", "on", tallLampOn, "Tall Lamp");
-//            }
-//        });
-//        final Button tallLampOff = (Button) findViewById(R.id.tallOff);
-//        tallLampOff.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("tallLamp", "off", tallLampOff, "Tall Lamp");
-//            }
-//        });
-//
-//        final Button sofaLampOn = (Button) findViewById(R.id.sofaOn);
-//        sofaLampOn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("sofaLamp", "on", sofaLampOn, "Sofa Lamp");
-//            }
-//        });
-//
-//        final Button sofaLampOff = (Button) findViewById(R.id.sofaOff);
-//        sofaLampOff.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("sofaLamp", "off", sofaLampOff, "Sofa Lamp");
-//            }
-//        });
-//
-//        final Button windowLampOn = (Button) findViewById(R.id.windowOn);
-//        windowLampOn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("windowLamp", "on", windowLampOn, "Window Lamp");
-//            }
-//        });
-//
-//        final Button windowLampOff = (Button) findViewById(R.id.windowOff);
-//        windowLampOff.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("windowLamp", "off", windowLampOff, "Window Lamp");
-//            }
-//        });
+        final ImageView tallBulb = (ImageView) findViewById(R.id.tallBulb);
+        tallBulb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                turnSingleLight("tallLamp", tallBulb, "Tall Lamp");
+            }
+        });
+
+        final ImageView windowBulb = (ImageView) findViewById(R.id.windowBulb);
+        windowBulb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                turnSingleLight("windowLamp", windowBulb, "Window Lamp");
+            }
+        });
+
+        final ImageView sofaBulb = (ImageView) findViewById(R.id.sofaBulb);
+        sofaBulb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                turnSingleLight("sofaLamp", sofaBulb, "Sofa Lamp");
+            }
+        });
+
+
 
         setupNotification();
         CreateSyncAccount();
         setUpSync();
-        getLoaderManager().initLoader(0, null, this);
+
+        final Main2Activity context = this;
+        mObserver = new ContentObserver(mHandler) {
+            @Override
+            public boolean deliverSelfNotifications() {
+                return super.deliverSelfNotifications();
+            }
+
+            @Override
+            public void onChange(boolean selfChange) {
+                Log.d(LOG_TAG, "onChange called from observer");
+                getLoaderManager().restartLoader(0, null, context);
+            }
+        };
+        registerForChanges();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
+    private void registerForChanges() {
+        getContentResolver().registerContentObserver(HarelHome.HOME_STATE_URI, false, mObserver);
     }
 
     private void setNfcListener() {
@@ -180,7 +179,7 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
             ContentResolver.setSyncAutomatically(accounts[0], AUTHORITY, true);
             Bundle syncExtras = new Bundle();
             ContentResolver.addPeriodicSync(accounts[0], AUTHORITY, syncExtras, SYNC_INTERVAL);
-            runSyncManually();
+//            runSyncManually();
         }
 
     }
@@ -271,13 +270,13 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
         );
         notificationView.setImageViewResource(
                 R.id.tallBulbMin,
-                R.drawable.on_bulb);
+                R.drawable.off_bulb);
         notificationView.setImageViewResource(
                 R.id.sofaBulbMin,
-                R.drawable.on_bulb);
+                R.drawable.off_bulb);
         notificationView.setImageViewResource(
                 R.id.windowBulbMin,
-                R.drawable.on_bulb);
+                R.drawable.off_bulb);
         return notificationView;
     }
 
@@ -288,13 +287,13 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
         );
         notificationView.setImageViewResource(
                 R.id.tallBulbEx,
-                R.drawable.on_bulb);
+                R.drawable.off_bulb);
         notificationView.setImageViewResource(
                 R.id.sofaBulbEx,
-                R.drawable.on_bulb);
+                R.drawable.off_bulb);
         notificationView.setImageViewResource(
                 R.id.windowBulbEx,
-                R.drawable.on_bulb);
+                R.drawable.off_bulb);
 
         Intent lightsIntent = new Intent(this, LightsBroadcastReceiver.class);
         PendingIntent toggleAllIntent = PendingIntent.getBroadcast(this, 0, lightsIntent, 0);
@@ -302,21 +301,45 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
         return notificationView;
     }
 
-    private void turnSingleLight(final String id, final String state, final Button btn, final String socketName) {
+    private void turnSingleLight(final String id, final ImageView bulbImage, final String socketName) {
+
+
+        String currState = (String)bulbImage.getTag();
+        if (currState == null) {
+            currState = "off";
+        }
+
+        Log.d(LOG_TAG, "turnSingleLight started with "+id+" current state is: "+currState);
+
+        String state = "on";
+        Boolean stateBool = true;
+        if (currState.equals("on")) {
+            state = "off";
+            stateBool = false;
+        }
+
+        updateBulbImage(bulbImage, stateBool);
+
+        final Context context = this;
+
         final ServiceCaller caller = new ServiceCaller() {
             @Override
             public void success(Object data) {
 
-                Log.d(LOG_TAG, "tallLamp is " + state + "?");
+                Log.d(LOG_TAG, id+" set state successfully");
 
-                Snackbar.make(btn, socketName + " turned " + state + " successfully", Snackbar.LENGTH_LONG)
+                Snackbar.make(bulbImage, socketName + " turned  state  successfully", Snackbar.LENGTH_LONG)
                         .show();
+                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
+                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
+                        HomeStateFetchService.STATE_EVENT_NAME);
+                context.startService(serviceIntent);
 
             }
 
             @Override
             public void failure(Object data, String description) {
-                Snackbar.make(btn, "Failed to turn " + state + " " + socketName, Snackbar.LENGTH_LONG)
+                Snackbar.make(bulbImage, "Failed to turn state " + socketName, Snackbar.LENGTH_LONG)
                         .setAction("Retry", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -389,6 +412,8 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
+        Log.d(LOG_TAG, "onLoadFinished started");
+
         cursor.moveToFirst();
 
         int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
@@ -410,17 +435,19 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
         ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
         ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
 
-        tallLamp.setImageResource(tallLampState ? R.drawable.on_bulb : R.drawable.off_bulb);
-        sofaLamp.setImageResource(sofaLampState ? R.drawable.on_bulb : R.drawable.off_bulb);
-        windowLamp.setImageResource(windowLampState ? R.drawable.on_bulb : R.drawable.off_bulb);
+        updateBulbImage(tallLamp, tallLampState);
+        updateBulbImage(sofaLamp, sofaLampState);
+        updateBulbImage(windowLamp, windowLampState);
 
         Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
                 " sofaLampState: "+sofaLampStateStr+
                 " windowLampState: "+windowLampStateStr);
-
-
         Log.d(LOG_TAG, "ori is "+oriState);
+    }
 
+    private void updateBulbImage(ImageView bulb, Boolean bulbState) {
+        bulb.setImageResource(bulbState ? R.drawable.on_bulb : R.drawable.off_bulb);
+        bulb.setTag(bulbState ? "on" : "off");
     }
 
     @Override
