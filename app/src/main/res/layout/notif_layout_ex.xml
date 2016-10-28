@@ -11,25 +11,28 @@
         android:layout_weight="1">
 
         <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/bulb"
+            android:layout_width="118dp"
+            android:layout_height="138dp"
+            app:srcCompat="@drawable/off_bulb"
             android:id="@+id/tallBulbEx"
-            android:layout_weight="1" />
+            android:scaleType="centerInside"
+            android:layout_weight="1"/>
 
         <ImageButton
-            android:layout_width="match_parent"
-            app:srcCompat="@drawable/bulb"
+            android:layout_width="118dp"
+            app:srcCompat="@drawable/off_bulb"
             android:id="@+id/sofaBulbEx"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_height="138dp"
+            android:scaleType="centerInside"
+            android:layout_weight="1"/>
 
         <ImageButton
-            android:layout_width="match_parent"
-            app:srcCompat="@drawable/bulb"
+            android:layout_width="118dp"
+            app:srcCompat="@drawable/off_bulb"
             android:id="@+id/windowBulbEx"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_height="138dp"
+            android:scaleType="centerInside"
+            android:layout_weight="1"/>
     </LinearLayout>
 
     <LinearLayout

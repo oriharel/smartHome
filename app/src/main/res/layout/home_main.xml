@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="16dp"
+        android:id="@+id/container"
+        android:background="@color/dkgray">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bulbLayout">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/off_bulb"
+            android:id="@+id/tallBulb"
+            android:layout_weight="1"
+            android:padding="@dimen/bulb_padd" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/off_bulb"
+            android:id="@+id/sofaBulb"
+            android:layout_weight="1"
+            android:padding="@dimen/bulb_padd" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/off_bulb"
+            android:id="@+id/windowBulb"
+            android:layout_weight="1"
+            android:padding="@dimen/bulb_padd" />
+    </LinearLayout>
+
+    <Button
+        android:text="@string/toggleHomeText"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/toggleButtonHeight"
+        android:id="@+id/toggleAllHome"
+        android:layout_gravity="center" />
+</LinearLayout>

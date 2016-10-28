@@ -18,12 +18,15 @@ import org.json.JSONObject;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeStateFetchService extends Service {
 
     public static final String LOG_TAG = HomeStateFetchService.class.getSimpleName();
     public static final String HOME_URL = "https://oriharel.herokuapp.com";
     Socket mSocket;
+    Timer mTimer;
 
     private static HashMap<String, String> sLampNameToMac;
     static {
@@ -47,6 +50,17 @@ public class HomeStateFetchService extends Service {
             Log.d(LOG_TAG, "connecting socket on "+HOME_URL);
             mSocket.connect();
 
+            mTimer = new Timer();
+            Log.d(LOG_TAG, "starting a timer for the background fetch");
+            mTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Log.e(LOG_TAG, "time out expired for home state...");
+                    mSocket.disconnect();
+                    stopSelf();
+                }
+            }, 60*1000*3);
+
         } catch (URISyntaxException e) {
             Log.e(LOG_TAG, "error creating socket", e);
         }
@@ -59,6 +73,7 @@ public class HomeStateFetchService extends Service {
             @Override
             public void call(Object... args) {
                 Log.d(LOG_TAG, "received state message from socket");
+                mTimer.cancel();
                 JSONObject state = (JSONObject)args[0];
 
                 try {
@@ -72,7 +87,7 @@ public class HomeStateFetchService extends Service {
 
                     insertStateToDb(sockets, persons, tempData, image);
                 } catch (JSONException e) {
-                    Log.e(LOG_TAG, "error processing state: "+state);
+                    Log.e(LOG_TAG, "error processing state: "+state, e);
                     return;
                 }
 

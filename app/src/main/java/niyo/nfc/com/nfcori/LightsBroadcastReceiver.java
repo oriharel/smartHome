@@ -29,7 +29,7 @@ public class LightsBroadcastReceiver extends BroadcastReceiver {
             }
         };
         GenericHttpRequestTask task = new GenericHttpRequestTask(caller);
-        String state = "on";
+        String state = "off";
         String url = s_url+"/all/sockets/"+state;
         task.execute(url, "true");
 

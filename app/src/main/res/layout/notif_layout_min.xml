@@ -4,24 +4,27 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <ImageButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/bulb"
+        android:layout_width="85dp"
+        android:layout_height="70dp"
+        app:srcCompat="@drawable/off_bulb"
         android:id="@+id/tallBulbMin"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:scaleType="centerInside" />
 
     <ImageButton
-        android:layout_width="match_parent"
-        app:srcCompat="@drawable/bulb"
+        android:layout_width="85dp"
+        android:layout_height="70dp"
+        app:srcCompat="@drawable/off_bulb"
         android:id="@+id/sofaBulbMin"
-        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
         android:layout_weight="1" />
 
     <ImageButton
-        android:layout_width="match_parent"
-        app:srcCompat="@drawable/bulb"
+        android:layout_width="85dp"
+        android:layout_height="70dp"
+        app:srcCompat="@drawable/off_bulb"
         android:id="@+id/windowBulbMin"
-        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
         android:layout_weight="1" />
 
 </LinearLayout>

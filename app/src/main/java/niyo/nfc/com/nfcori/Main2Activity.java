@@ -3,19 +3,30 @@ package niyo.nfc.com.nfcori;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.LoaderManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.renderscript.Allocation;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,20 +34,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
 import java.io.UnsupportedEncodingException;
 
 import static niyo.nfc.com.nfcori.HarelHome.AUTHORITY;
 
-public class Main2Activity extends AppCompatActivity {
+public class Main2Activity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     public static final String LOG_TAG = Main2Activity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_GET_ACCOUNTS = 1;
-    Account mAccount;
+//    Account mAccount;
     public static final String s_url = "https://oriharel.herokuapp.com";
 
     public static final String ACCOUNT_TYPE = "harelHome";
@@ -56,25 +71,15 @@ public class Main2Activity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        fab.setVisibility(View.INVISIBLE);
-
-        Button offButton = (Button) findViewById(R.id.offButton);
-        offButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnTheLights("off");
-            }
-        });
-
-        Button onButton = (Button) findViewById(R.id.onButton);
+//        Button offButton = (Button) findViewById(R.id.offButton);
+//        offButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnTheLights("off");
+//            }
+//        });
+//
+        Button onButton = (Button) findViewById(R.id.toggleAllHome);
         onButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +87,62 @@ public class Main2Activity extends AppCompatActivity {
             }
         });
 
+        setNfcListener();
+
+//        final Button tallLampOn = (Button) findViewById(R.id.tallOn);
+//        tallLampOn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("tallLamp", "on", tallLampOn, "Tall Lamp");
+//            }
+//        });
+//        final Button tallLampOff = (Button) findViewById(R.id.tallOff);
+//        tallLampOff.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("tallLamp", "off", tallLampOff, "Tall Lamp");
+//            }
+//        });
+//
+//        final Button sofaLampOn = (Button) findViewById(R.id.sofaOn);
+//        sofaLampOn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("sofaLamp", "on", sofaLampOn, "Sofa Lamp");
+//            }
+//        });
+//
+//        final Button sofaLampOff = (Button) findViewById(R.id.sofaOff);
+//        sofaLampOff.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("sofaLamp", "off", sofaLampOff, "Sofa Lamp");
+//            }
+//        });
+//
+//        final Button windowLampOn = (Button) findViewById(R.id.windowOn);
+//        windowLampOn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("windowLamp", "on", windowLampOn, "Window Lamp");
+//            }
+//        });
+//
+//        final Button windowLampOff = (Button) findViewById(R.id.windowOff);
+//        windowLampOff.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("windowLamp", "off", windowLampOff, "Window Lamp");
+//            }
+//        });
+
+        setupNotification();
+        CreateSyncAccount();
+        setUpSync();
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    private void setNfcListener() {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage[] msgs;
@@ -95,7 +156,7 @@ public class Main2Activity extends AppCompatActivity {
                         String decoded = new String(payload, "UTF-8");
                         Log.d(LOG_TAG, "received nfc with: " + decoded);
                         if (decoded.contains("homeDoor")) {
-                            turnTheLights("on");
+                            turnTheLights("off");
                         }
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
@@ -103,57 +164,6 @@ public class Main2Activity extends AppCompatActivity {
                 }
             }
         }
-
-        final Button tallLampOn = (Button) findViewById(R.id.tallOn);
-        tallLampOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("tallLamp", "on", tallLampOn, "Tall Lamp");
-            }
-        });
-        final Button tallLampOff = (Button) findViewById(R.id.tallOff);
-        tallLampOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("tallLamp", "off", tallLampOff, "Tall Lamp");
-            }
-        });
-
-        final Button sofaLampOn = (Button) findViewById(R.id.sofaOn);
-        sofaLampOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("sofaLamp", "on", sofaLampOn, "Sofa Lamp");
-            }
-        });
-
-        final Button sofaLampOff = (Button) findViewById(R.id.sofaOff);
-        sofaLampOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("sofaLamp", "off", sofaLampOff, "Sofa Lamp");
-            }
-        });
-
-        final Button windowLampOn = (Button) findViewById(R.id.windowOn);
-        windowLampOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("windowLamp", "on", windowLampOn, "Window Lamp");
-            }
-        });
-
-        final Button windowLampOff = (Button) findViewById(R.id.windowOff);
-        windowLampOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("windowLamp", "off", windowLampOff, "Window Lamp");
-            }
-        });
-
-        setupNotification();
-        CreateSyncAccount();
-        setUpSync();
     }
 
     private void setUpSync() {
@@ -231,7 +241,7 @@ public class Main2Activity extends AppCompatActivity {
     private void setupNotification() {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.bulb)
+                        .setSmallIcon(R.drawable.on_bulb)
                         .setTicker("My notification")
                         .setOngoing(true);
         mBuilder.setCustomContentView(getComplexNotificationViewMin());
@@ -261,13 +271,13 @@ public class Main2Activity extends AppCompatActivity {
         );
         notificationView.setImageViewResource(
                 R.id.tallBulbMin,
-                R.drawable.bulb);
+                R.drawable.on_bulb);
         notificationView.setImageViewResource(
                 R.id.sofaBulbMin,
-                R.drawable.bulb);
+                R.drawable.on_bulb);
         notificationView.setImageViewResource(
                 R.id.windowBulbMin,
-                R.drawable.bulb);
+                R.drawable.on_bulb);
         return notificationView;
     }
 
@@ -278,13 +288,13 @@ public class Main2Activity extends AppCompatActivity {
         );
         notificationView.setImageViewResource(
                 R.id.tallBulbEx,
-                R.drawable.bulb);
+                R.drawable.on_bulb);
         notificationView.setImageViewResource(
                 R.id.sofaBulbEx,
-                R.drawable.bulb);
+                R.drawable.on_bulb);
         notificationView.setImageViewResource(
                 R.id.windowBulbEx,
-                R.drawable.bulb);
+                R.drawable.on_bulb);
 
         Intent lightsIntent = new Intent(this, LightsBroadcastReceiver.class);
         PendingIntent toggleAllIntent = PendingIntent.getBroadcast(this, 0, lightsIntent, 0);
@@ -370,4 +380,51 @@ public class Main2Activity extends AppCompatActivity {
         ContentResolver.requestSync(accounts[0], AUTHORITY, settingsBundle);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(this, HarelHome.HOME_STATE_URI,
+                HarelHome.HOME_STATE_PROJECTION, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+        cursor.moveToFirst();
+
+        int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
+        String tallLampStateStr = cursor.getString(colTallStateIndex);
+        Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
+
+        int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
+        String sofaLampStateStr = cursor.getString(colSofaStateIndex);
+        Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
+
+        int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
+        String windowLampStateStr = cursor.getString(colWindowStateIndex);
+        Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
+
+        int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
+        String oriState = cursor.getString(oriPresIndex);
+
+        ImageView tallLamp = (ImageView)findViewById(R.id.tallBulb);
+        ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
+        ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
+
+        tallLamp.setImageResource(tallLampState ? R.drawable.on_bulb : R.drawable.off_bulb);
+        sofaLamp.setImageResource(sofaLampState ? R.drawable.on_bulb : R.drawable.off_bulb);
+        windowLamp.setImageResource(windowLampState ? R.drawable.on_bulb : R.drawable.off_bulb);
+
+        Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
+                " sofaLampState: "+sofaLampStateStr+
+                " windowLampState: "+windowLampStateStr);
+
+
+        Log.d(LOG_TAG, "ori is "+oriState);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }
