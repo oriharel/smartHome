@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <application
@@ -52,10 +51,10 @@
 
         <provider
             android:name=".HarelHomeProvider"
-            android:label="@string/provider_name"
             android:authorities="com.niyo.home"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/provider_name" />
 
         <service
             android:name=".SyncService"
@@ -73,7 +72,17 @@
         <service
             android:name=".HomeStateFetchService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <receiver
+            android:name=".NotificationReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.niyo.updateNotification" >
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

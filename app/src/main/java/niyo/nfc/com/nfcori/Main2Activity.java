@@ -109,9 +109,8 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
             }
         });
 
-
-
-        setupNotification();
+        Intent notifIntent = new Intent("com.niyo.updateNotification");
+        sendBroadcast(notifIntent);
         CreateSyncAccount();
         setUpSync();
 
@@ -235,70 +234,6 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
              */
             Log.d(LOG_TAG, "The account exists or some other error occurred");
         }
-    }
-
-    private void setupNotification() {
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.on_bulb)
-                        .setTicker("My notification")
-                        .setOngoing(true);
-        mBuilder.setCustomContentView(getComplexNotificationViewMin());
-        mBuilder.setCustomBigContentView(getComplexNotificationViewEx());
-        Intent resultIntent = new Intent(this, Main2Activity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(Main2Activity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
-        mBuilder.setPriority(Notification.PRIORITY_MAX);
-
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(0, mBuilder.build());
-    }
-
-    private RemoteViews getComplexNotificationViewMin() {
-        RemoteViews notificationView = new RemoteViews(
-                getPackageName(),
-                R.layout.notif_layout_min
-        );
-        notificationView.setImageViewResource(
-                R.id.tallBulbMin,
-                R.drawable.off_bulb);
-        notificationView.setImageViewResource(
-                R.id.sofaBulbMin,
-                R.drawable.off_bulb);
-        notificationView.setImageViewResource(
-                R.id.windowBulbMin,
-                R.drawable.off_bulb);
-        return notificationView;
-    }
-
-    private RemoteViews getComplexNotificationViewEx() {
-        RemoteViews notificationView = new RemoteViews(
-                getPackageName(),
-                R.layout.notif_layout_ex
-        );
-        notificationView.setImageViewResource(
-                R.id.tallBulbEx,
-                R.drawable.off_bulb);
-        notificationView.setImageViewResource(
-                R.id.sofaBulbEx,
-                R.drawable.off_bulb);
-        notificationView.setImageViewResource(
-                R.id.windowBulbEx,
-                R.drawable.off_bulb);
-
-        Intent lightsIntent = new Intent(this, LightsBroadcastReceiver.class);
-        PendingIntent toggleAllIntent = PendingIntent.getBroadcast(this, 0, lightsIntent, 0);
-        notificationView.setOnClickPendingIntent(R.id.toggleAll, toggleAllIntent);
-        return notificationView;
     }
 
     private void turnSingleLight(final String id, final ImageView bulbImage, final String socketName) {

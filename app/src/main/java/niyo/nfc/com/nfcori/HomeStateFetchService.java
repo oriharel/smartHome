@@ -123,6 +123,8 @@ public class HomeStateFetchService extends Service {
         mSocket.off(eventName, listener);
 
         Log.d(LOG_TAG, "stopping service now...");
+        Intent notifIntent = new Intent("com.niyo.updateNotification");
+        sendBroadcast(notifIntent);
         stopSelf();
     }
 
