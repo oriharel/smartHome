@@ -21,6 +21,7 @@ public class LightsBroadcastReceiver extends BroadcastReceiver {
     public static final String TALL_LAMP = "tallLamp";
     public static final String SOFA_LAMP = "sofaLamp";
     public static final String WINDOW_LAMP = "windowLamp";
+    public static final String ALL_STATE_EXTRA = "allExtra";
 
     @Override
     public void onReceive(final Context context, Intent intent) {
@@ -62,37 +63,32 @@ public class LightsBroadcastReceiver extends BroadcastReceiver {
 
             String bulbName = intent.getStringExtra(BULB_NAME_EXTRA);
 
-            String state;
-            switch (bulbName) {
-                case (TALL_LAMP):
-                    state = calcStateToBe(tallLampState);
-                    break;
-                case (SOFA_LAMP):
-                    state = calcStateToBe(sofaLampState);
-                    break;
-                case (WINDOW_LAMP):
-                    state = calcStateToBe(windowLampState);
-                    break;
-                default:
-                    state = "";
-            }
-
-            Log.d(LOG_TAG, "received lights broadcast with bulbName: "+bulbName+" state: "+state);
             String url;
-            if (TextUtils.isEmpty(bulbName)) {
-                url = s_url+"/all/sockets/";
+
+            if (!TextUtils.isEmpty(bulbName)) {
+                String state;
+                switch (bulbName) {
+                    case (TALL_LAMP):
+                        state = calcStateToBe(tallLampState);
+                        break;
+                    case (SOFA_LAMP):
+                        state = calcStateToBe(sofaLampState);
+                        break;
+                    case (WINDOW_LAMP):
+                        state = calcStateToBe(windowLampState);
+                        break;
+                    default:
+                        state = "";
+                }
+
+                url = s_url+"/sockets/"+bulbName+"/"+state;
             }
             else {
-                url = s_url+"/sockets/"+bulbName+"/";
+                String allState = intent.getStringExtra(ALL_STATE_EXTRA);
+                url = s_url+"/all/sockets/"+allState;
             }
 
-            if (TextUtils.isEmpty(state)) {
-                state = "off";
-            }
-
-            url += state;
             GenericHttpRequestTask task = new GenericHttpRequestTask(caller);
-
             task.execute(url, "true");
         }
 

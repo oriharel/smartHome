@@ -154,8 +154,13 @@ public class NotificationReceiver extends BroadcastReceiver {
                 R.id.windowBulbEx,
                 windowBulb);
 
-        Intent lightsIntent = new Intent(context, LightsBroadcastReceiver.class);
-        PendingIntent toggleAllIntent = PendingIntent.getBroadcast(context, 3, lightsIntent, 0);
+        Intent lightsOnIntent = new Intent(context, LightsBroadcastReceiver.class);
+        lightsOnIntent.putExtra(LightsBroadcastReceiver.ALL_STATE_EXTRA, "on");
+        PendingIntent allOnIntent = PendingIntent.getBroadcast(context, 8, lightsOnIntent, 0);
+
+        Intent lightsOffIntent = new Intent(context, LightsBroadcastReceiver.class);
+        lightsOffIntent.putExtra(LightsBroadcastReceiver.ALL_STATE_EXTRA, "off");
+        PendingIntent allOffIntent = PendingIntent.getBroadcast(context, 7, lightsOffIntent, 0);
 
         Intent tallIntent = new Intent(context, LightsBroadcastReceiver.class);
         tallIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.TALL_LAMP);
@@ -169,7 +174,8 @@ public class NotificationReceiver extends BroadcastReceiver {
         windowIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.WINDOW_LAMP);
         PendingIntent windowPendingIntent = PendingIntent.getBroadcast(context, 6, windowIntent, 0);
 
-        notificationView.setOnClickPendingIntent(R.id.toggleAll, toggleAllIntent);
+        notificationView.setOnClickPendingIntent(R.id.allOnNotif, allOnIntent);
+        notificationView.setOnClickPendingIntent(R.id.allOffNotif, allOffIntent);
         notificationView.setOnClickPendingIntent(R.id.tallBulbEx, tallPendingIntent);
         notificationView.setOnClickPendingIntent(R.id.sofaBulbEx, sofaPendingIntent);
         notificationView.setOnClickPendingIntent(R.id.windowBulbEx, windowPendingIntent);

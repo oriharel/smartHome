@@ -75,11 +75,19 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button onButton = (Button) findViewById(R.id.toggleAllHome);
+        Button onButton = (Button) findViewById(R.id.allOn);
         onButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 turnTheLights("on");
+            }
+        });
+
+        Button offButton = (Button) findViewById(R.id.allOff);
+        offButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                turnTheLights("off");
             }
         });
 
@@ -290,11 +298,17 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
 
     private void turnTheLights(final String state) {
 
+        final Context context = this;
+
         final ServiceCaller caller = new ServiceCaller() {
             @Override
             public void success(Object data) {
 
                 Log.d(LOG_TAG, "all sockets are " + state + "?");
+                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
+                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
+                        HomeStateFetchService.STATE_EVENT_NAME);
+                context.startService(serviceIntent);
             }
 
             @Override

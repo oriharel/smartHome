@@ -11,5 +11,7 @@
     <string name="title_activity_main2">Light Switch</string>
     <string name="provider_name">Home State</string>
     <string name="toggleHomeText">Toggle All</string>
+    <string name="allOn">All On</string>
+    <string name="allOff">All Off</string>
 
 </resources>

@@ -39,10 +39,25 @@
             android:padding="@dimen/bulb_padd" />
     </LinearLayout>
 
-    <Button
-        android:text="@string/toggleHomeText"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/toggleButtonHeight"
-        android:id="@+id/toggleAllHome"
-        android:layout_gravity="center" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:text="@string/allOn"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toggleButtonHeight"
+            android:id="@+id/allOn"
+            android:layout_gravity="center"
+            android:layout_weight="1" />
+
+        <Button
+            android:text="@string/allOff"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:id="@+id/allOff"
+            android:layout_gravity="center"
+            android:layout_weight="1" />
+    </LinearLayout>
 </LinearLayout>
