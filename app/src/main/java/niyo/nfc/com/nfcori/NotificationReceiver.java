@@ -26,30 +26,36 @@ public class NotificationReceiver extends BroadcastReceiver {
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(HarelHome.HOME_STATE_URI, HarelHome.HOME_STATE_PROJECTION, null, null, null);
         assert cursor != null;
-        cursor.moveToFirst();
 
-        int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
-        String tallLampStateStr = cursor.getString(colTallStateIndex);
-        Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
+        if(cursor.moveToFirst() ){
+            int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
+            String tallLampStateStr = cursor.getString(colTallStateIndex);
+            Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
 
-        int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
-        String sofaLampStateStr = cursor.getString(colSofaStateIndex);
-        Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
+            int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
+            String sofaLampStateStr = cursor.getString(colSofaStateIndex);
+            Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
 
-        int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
-        String windowLampStateStr = cursor.getString(colWindowStateIndex);
-        Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
+            int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
+            String windowLampStateStr = cursor.getString(colWindowStateIndex);
+            Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
 
-        int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
-        String oriState = cursor.getString(oriPresIndex);
+            int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
+            String oriState = cursor.getString(oriPresIndex);
+
+            Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
+                    " sofaLampState: "+sofaLampStateStr+
+                    " windowLampState: "+windowLampStateStr);
+            Log.d(LOG_TAG, "ori is "+oriState);
+            setupNotification(context, tallLampState, sofaLampState, windowLampState);
+        }
+        else {
+            Log.e(LOG_TAG, "Error no cursor!");
+        }
 
         cursor.close();
 
-        Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
-                " sofaLampState: "+sofaLampStateStr+
-                " windowLampState: "+windowLampStateStr);
-        Log.d(LOG_TAG, "ori is "+oriState);
-        setupNotification(context, tallLampState, sofaLampState, windowLampState);
+
     }
 
     private void setupNotification(Context context,
@@ -101,6 +107,27 @@ public class NotificationReceiver extends BroadcastReceiver {
         notificationView.setImageViewResource(
                 R.id.windowBulbMin,
                 windowBulb);
+
+        Intent tallIntent = new Intent(context, LightsBroadcastReceiver.class);
+        tallIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.TALL_LAMP);
+        PendingIntent tallPendingIntent = PendingIntent.getBroadcast(context, 0, tallIntent, 0);
+
+        Intent sofaIntent = new Intent(context, LightsBroadcastReceiver.class);
+        sofaIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.SOFA_LAMP);
+        PendingIntent sofaPendingIntent = PendingIntent.getBroadcast(context, 1, sofaIntent, 0);
+
+        Intent windowIntent = new Intent(context, LightsBroadcastReceiver.class);
+        windowIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.WINDOW_LAMP);
+        PendingIntent windowPendingIntent = PendingIntent.getBroadcast(context, 2, windowIntent, 0);
+
+        notificationView.setOnClickPendingIntent(R.id.tallBulbMin, tallPendingIntent);
+        notificationView.setOnClickPendingIntent(R.id.sofaBulbMin, sofaPendingIntent);
+        notificationView.setOnClickPendingIntent(R.id.windowBulbMin, windowPendingIntent);
+
+        Log.d(LOG_TAG, "setting up small notification with states: tallLampState: "+tallLampState+
+                " sofaLampState: "+sofaLampState+
+                " windowLampState: "+windowLampState);
+
         return notificationView;
     }
 
@@ -128,8 +155,31 @@ public class NotificationReceiver extends BroadcastReceiver {
                 windowBulb);
 
         Intent lightsIntent = new Intent(context, LightsBroadcastReceiver.class);
-        PendingIntent toggleAllIntent = PendingIntent.getBroadcast(context, 0, lightsIntent, 0);
+        PendingIntent toggleAllIntent = PendingIntent.getBroadcast(context, 3, lightsIntent, 0);
+
+        Intent tallIntent = new Intent(context, LightsBroadcastReceiver.class);
+        tallIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.TALL_LAMP);
+        PendingIntent tallPendingIntent = PendingIntent.getBroadcast(context, 4, tallIntent, 0);
+
+        Intent sofaIntent = new Intent(context, LightsBroadcastReceiver.class);
+        sofaIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.SOFA_LAMP);
+        PendingIntent sofaPendingIntent = PendingIntent.getBroadcast(context, 5, sofaIntent, 0);
+
+        Intent windowIntent = new Intent(context, LightsBroadcastReceiver.class);
+        windowIntent.putExtra(LightsBroadcastReceiver.BULB_NAME_EXTRA, LightsBroadcastReceiver.WINDOW_LAMP);
+        PendingIntent windowPendingIntent = PendingIntent.getBroadcast(context, 6, windowIntent, 0);
+
         notificationView.setOnClickPendingIntent(R.id.toggleAll, toggleAllIntent);
+        notificationView.setOnClickPendingIntent(R.id.tallBulbEx, tallPendingIntent);
+        notificationView.setOnClickPendingIntent(R.id.sofaBulbEx, sofaPendingIntent);
+        notificationView.setOnClickPendingIntent(R.id.windowBulbEx, windowPendingIntent);
+
+        Log.d(LOG_TAG, "setting up big notification with states: tallLampState: "+tallLampState+
+                " sofaLampState: "+sofaLampState+
+                " windowLampState: "+windowLampState);
+
         return notificationView;
     }
+
+
 }

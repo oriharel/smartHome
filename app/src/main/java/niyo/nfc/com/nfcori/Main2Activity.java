@@ -349,35 +349,37 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
 
         Log.d(LOG_TAG, "onLoadFinished started");
 
-        cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
+            int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
+            String tallLampStateStr = cursor.getString(colTallStateIndex);
+            Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
 
-        int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
-        String tallLampStateStr = cursor.getString(colTallStateIndex);
-        Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
+            int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
+            String sofaLampStateStr = cursor.getString(colSofaStateIndex);
+            Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
 
-        int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
-        String sofaLampStateStr = cursor.getString(colSofaStateIndex);
-        Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
+            int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
+            String windowLampStateStr = cursor.getString(colWindowStateIndex);
+            Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
 
-        int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
-        String windowLampStateStr = cursor.getString(colWindowStateIndex);
-        Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
+            int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
+            String oriState = cursor.getString(oriPresIndex);
 
-        int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
-        String oriState = cursor.getString(oriPresIndex);
+            ImageView tallLamp = (ImageView)findViewById(R.id.tallBulb);
+            ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
+            ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
 
-        ImageView tallLamp = (ImageView)findViewById(R.id.tallBulb);
-        ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
-        ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
+            updateBulbImage(tallLamp, tallLampState);
+            updateBulbImage(sofaLamp, sofaLampState);
+            updateBulbImage(windowLamp, windowLampState);
 
-        updateBulbImage(tallLamp, tallLampState);
-        updateBulbImage(sofaLamp, sofaLampState);
-        updateBulbImage(windowLamp, windowLampState);
+            Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
+                    " sofaLampState: "+sofaLampStateStr+
+                    " windowLampState: "+windowLampStateStr);
+            Log.d(LOG_TAG, "ori is "+oriState);
+        }
 
-        Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
-                " sofaLampState: "+sofaLampStateStr+
-                " windowLampState: "+windowLampStateStr);
-        Log.d(LOG_TAG, "ori is "+oriState);
+
     }
 
     private void updateBulbImage(ImageView bulb, Boolean bulbState) {
