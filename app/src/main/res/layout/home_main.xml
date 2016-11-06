@@ -12,7 +12,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bulbLayout">
+        android:id="@+id/bulbLayout"
+        >
 
         <ImageView
             android:layout_width="wrap_content"
@@ -42,7 +43,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        >
 
         <Button
             android:text="@string/allOn"
@@ -60,4 +62,13 @@
             android:layout_gravity="center"
             android:layout_weight="1" />
     </LinearLayout>
+
+    <ImageView
+        app:srcCompat="@drawable/broadstairs"
+        android:id="@+id/homeImage"
+        android:layout_marginTop="10dip"
+        android:elevation="24dp"
+        android:layout_width="322dip"
+        android:layout_height="242dip"
+        android:layout_gravity="center" />
 </LinearLayout>

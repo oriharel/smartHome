@@ -60,6 +60,10 @@ public class HomeStateFetchService extends Service {
 
         try {
 
+            if (intent == null) {
+                stopSelf();
+                return START_STICKY;
+            }
             mSocket = IO.socket(HOME_URL);
             final String eventName = intent.getStringExtra(EVENT_NAMT_EXTRA);
 

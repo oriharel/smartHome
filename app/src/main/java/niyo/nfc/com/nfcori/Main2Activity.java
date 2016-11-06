@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -37,6 +38,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -386,6 +388,14 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
             updateBulbImage(tallLamp, tallLampState);
             updateBulbImage(sofaLamp, sofaLampState);
             updateBulbImage(windowLamp, windowLampState);
+
+            int homeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_PIC);
+            byte[] homeImage64 = cursor.getBlob(homeImageIndex);
+            Log.d(LOG_TAG, "received imageBase64: "+homeImage64.length);
+            ImageView homeImageView = (ImageView)findViewById(R.id.homeImage);
+            byte[] decodedString = Base64.decode(homeImage64, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            homeImageView.setImageBitmap(decodedByte);
 
             Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
                     " sofaLampState: "+sofaLampStateStr+
