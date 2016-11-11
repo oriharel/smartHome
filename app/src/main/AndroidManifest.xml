@@ -51,14 +51,14 @@
         </service>
 
         <provider
-            android:name=".HarelHomeProvider"
+            android:name=".db.HarelHomeProvider"
             android:authorities="com.niyo.home"
             android:enabled="true"
             android:exported="false"
             android:label="@string/provider_name" />
 
         <service
-            android:name=".SyncService"
+            android:name=".db.SyncService"
             android:enabled="true"
             android:exported="true"
             android:process=":sync">

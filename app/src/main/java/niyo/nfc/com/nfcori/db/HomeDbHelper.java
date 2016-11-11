@@ -1,4 +1,4 @@
-package niyo.nfc.com.nfcori;
+package niyo.nfc.com.nfcori.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

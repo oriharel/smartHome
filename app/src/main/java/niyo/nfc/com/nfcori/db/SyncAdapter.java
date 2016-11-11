@@ -1,4 +1,4 @@
-package niyo.nfc.com.nfcori;
+package niyo.nfc.com.nfcori.db;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
+
+import niyo.nfc.com.nfcori.HomeStateFetchService;
 
 /**
  * Created by oriharel on 24/10/2016.

@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import niyo.nfc.com.nfcori.db.HomeTableColumns;
+
 public class HomeStateFetchService extends Service {
 
     public static final String LOG_TAG = HomeStateFetchService.class.getSimpleName();

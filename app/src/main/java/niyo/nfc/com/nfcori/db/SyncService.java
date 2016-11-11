@@ -1,8 +1,10 @@
-package niyo.nfc.com.nfcori;
+package niyo.nfc.com.nfcori.db;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
+import niyo.nfc.com.nfcori.db.SyncAdapter;
 
 public class SyncService extends Service {
 

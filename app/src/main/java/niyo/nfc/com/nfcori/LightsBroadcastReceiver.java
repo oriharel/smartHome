@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import niyo.nfc.com.nfcori.db.HomeTableColumns;
+
 import static niyo.nfc.com.nfcori.Main2Activity.s_url;
 
 /**

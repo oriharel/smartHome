@@ -1,4 +1,4 @@
-package niyo.nfc.com.nfcori;
+package niyo.nfc.com.nfcori.db;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -12,6 +12,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.HashMap;
+
+import niyo.nfc.com.nfcori.AndroidUtil;
+import niyo.nfc.com.nfcori.HarelHome;
 
 public class HarelHomeProvider extends ContentProvider {
     public static final String LOG_TAG = HarelHomeProvider.class.getSimpleName();
@@ -168,7 +171,7 @@ public class HarelHomeProvider extends ContentProvider {
         }
 
         Log.d(LOG_TAG, "going to query with selection "+selection);
-        Log.d(LOG_TAG, "projection is "+AndroidUtil.getArrayAsString(projection));
+        Log.d(LOG_TAG, "projection is "+ AndroidUtil.getArrayAsString(projection));
         Log.d(LOG_TAG, "selectionArgs is "+AndroidUtil.getArrayAsString(selectionArgs));
         Log.d(LOG_TAG, "sort order is "+sortOrder);
         String orderBy = HomeTableColumns.LAST_UPDATE_TIME;

@@ -4,10 +4,6 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.LoaderManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -18,40 +14,44 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.renderscript.Allocation;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RemoteViews;
 
 import java.io.UnsupportedEncodingException;
 
+
+import niyo.nfc.com.nfcori.db.HomeTableColumns;
+
 import static niyo.nfc.com.nfcori.HarelHome.AUTHORITY;
 
-public class Main2Activity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class Main2Activity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener{
 
     public static final String LOG_TAG = Main2Activity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_GET_ACCOUNTS = 1;
@@ -69,55 +69,81 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
                     SECONDS_PER_MINUTE;
     private ContentObserver mObserver;
     Handler mHandler = new Handler();
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button onButton = (Button) findViewById(R.id.allOn);
-        onButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                turnTheLights("on");
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
-        Button offButton = (Button) findViewById(R.id.allOff);
-        offButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnTheLights("off");
-            }
-        });
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-        setNfcListener();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        final ImageView tallBulb = (ImageView) findViewById(R.id.tallBulb);
-        tallBulb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("tallLamp", tallBulb, "Tall Lamp");
-            }
-        });
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        final ImageView windowBulb = (ImageView) findViewById(R.id.windowBulb);
-        windowBulb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("windowLamp", windowBulb, "Window Lamp");
-            }
-        });
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.vpcontainer);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        final ImageView sofaBulb = (ImageView) findViewById(R.id.sofaBulb);
-        sofaBulb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnSingleLight("sofaLamp", sofaBulb, "Sofa Lamp");
-            }
-        });
+//        Button onButton = (Button) findViewById(R.id.allOn);
+//        onButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnTheLights("on");
+//            }
+//        });
+//
+//        Button offButton = (Button) findViewById(R.id.allOff);
+//        offButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnTheLights("off");
+//            }
+//        });
+//
+//        setNfcListener();
+//
+//        final ImageView tallBulb = (ImageView) findViewById(R.id.tallBulb);
+//        tallBulb.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("tallLamp", tallBulb, "Tall Lamp");
+//            }
+//        });
+//
+//        final ImageView windowBulb = (ImageView) findViewById(R.id.windowBulb);
+//        windowBulb.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("windowLamp", windowBulb, "Window Lamp");
+//            }
+//        });
+//
+//        final ImageView sofaBulb = (ImageView) findViewById(R.id.sofaBulb);
+//        sofaBulb.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                turnSingleLight("sofaLamp", sofaBulb, "Sofa Lamp");
+//            }
+//        });
 
         Intent notifIntent = new Intent("com.niyo.updateNotification");
         sendBroadcast(notifIntent);
@@ -263,7 +289,7 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
             stateBool = false;
         }
 
-        updateBulbImage(bulbImage, stateBool);
+//        updateBulbImage(bulbImage, stateBool);
 
         final Context context = this;
 
@@ -385,9 +411,9 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
             ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
             ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
 
-            updateBulbImage(tallLamp, tallLampState);
-            updateBulbImage(sofaLamp, sofaLampState);
-            updateBulbImage(windowLamp, windowLampState);
+//            updateBulbImage(tallLamp, tallLampState);
+//            updateBulbImage(sofaLamp, sofaLampState);
+//            updateBulbImage(windowLamp, windowLampState);
 
             int homeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_PIC);
             byte[] homeImage64 = cursor.getBlob(homeImageIndex);
@@ -395,7 +421,7 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
             ImageView homeImageView = (ImageView)findViewById(R.id.homeImage);
             byte[] decodedString = Base64.decode(homeImage64, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            homeImageView.setImageBitmap(decodedByte);
+//            homeImageView.setImageBitmap(decodedByte);
 
             Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
                     " sofaLampState: "+sofaLampStateStr+
@@ -414,5 +440,127 @@ public class Main2Activity extends AppCompatActivity implements LoaderManager.Lo
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    public static class ImageFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public ImageFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static ImageFragment newInstance(int sectionNumber) {
+            ImageFragment fragment = new ImageFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.home_main, container, false);
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            return rootView;
+        }
+    }
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            return ImageFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "Cameras";
+                case 1:
+                    return "Lights";
+                case 2:
+                    return "Presence";
+            }
+            return null;
+        }
     }
 }

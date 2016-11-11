@@ -2,6 +2,8 @@ package niyo.nfc.com.nfcori;
 
 import android.net.Uri;
 
+import niyo.nfc.com.nfcori.db.HomeTableColumns;
+
 /**
  * Created by oriharel on 24/10/2016.
  */

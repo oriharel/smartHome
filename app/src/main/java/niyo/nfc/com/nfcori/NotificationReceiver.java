@@ -11,8 +11,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
+
+import niyo.nfc.com.nfcori.db.HomeTableColumns;
 
 public class NotificationReceiver extends BroadcastReceiver {
     public static final String LOG_TAG = NotificationReceiver.class.getSimpleName();
