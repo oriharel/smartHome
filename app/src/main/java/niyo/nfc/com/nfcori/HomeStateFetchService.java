@@ -107,20 +107,26 @@ public class HomeStateFetchService extends Service {
         Log.d(LOG_TAG, "received "+eventName+" message from socket");
         mTimer.cancel();
         JSONObject state = (JSONObject)args[0];
+        JSONArray sockets = null;
+        JSONObject persons = null;
+        JSONObject tempData = null;
+        String image = null;
 
         try {
-            JSONArray sockets = state.getJSONArray("sockets");
+            sockets = state.getJSONArray("sockets");
             Log.d(LOG_TAG, "sockets: "+sockets);
-            JSONObject persons = state.getJSONObject("persons");
+            persons = state.getJSONObject("persons");
             Log.d(LOG_TAG, "persons: "+persons);
-            JSONObject tempData = state.getJSONObject("tempData");
-            Log.d(LOG_TAG, "tempData: "+tempData);
-            String image = state.getString("image");
+//            tempData = state.getJSONObject("tempData");
+//            Log.d(LOG_TAG, "tempData: "+tempData);
+//            image = state.getString("image");
 
-            insertStateToDb(sockets, persons, tempData, image);
+
         } catch (JSONException e) {
             Log.e(LOG_TAG, "error processing state: "+state, e);
-            return;
+        }
+        finally {
+            insertStateToDb(sockets, persons, tempData, image);
         }
 
         Log.d(LOG_TAG, "disconnecting socket now...");
@@ -134,40 +140,53 @@ public class HomeStateFetchService extends Service {
         stopSelf();
     }
 
-    private void insertStateToDb(JSONArray sockets, JSONObject persons, JSONObject tempData, String image) throws JSONException {
+    private void insertStateToDb(JSONArray sockets, JSONObject persons, JSONObject tempData, String image) {
 
         Log.d(LOG_TAG, "insertStateToDb started");
         ContentValues values = new ContentValues();
 
-        JSONObject tallLamp = getLampObject(sockets, sLampNameToMac.get("tallLamp"));
-        JSONObject sofaLamp = getLampObject(sockets, sLampNameToMac.get("sofaLamp"));
-        JSONObject windowLamp = getLampObject(sockets, sLampNameToMac.get("windowLamp"));
+        JSONObject tallLamp = null;
+        try {
+            tallLamp = getLampObject(sockets, sLampNameToMac.get("tallLamp"));
 
-        Date current = new Date();
-        values.put(HomeTableColumns.LAST_UPDATE_TIME, current.getTime());
-        values.put(HomeTableColumns.TALL_LAMP_STATE, tallLamp.getString("state"));
-        values.put(HomeTableColumns.SOFA_LAMP_STATE, sofaLamp.getString("state"));
-        values.put(HomeTableColumns.WINDOW_LAMP_STATE, windowLamp.getString("state"));
+            JSONObject sofaLamp = getLampObject(sockets, sLampNameToMac.get("sofaLamp"));
+            JSONObject windowLamp = getLampObject(sockets, sLampNameToMac.get("windowLamp"));
 
-        String[] oriInfo = persons.getString("Ori").split(": ");
-        String[] yifatInfo = persons.getString("Yifat").split(": ");
-        values.put(HomeTableColumns.ORI_PRESENCE, oriInfo[0]);
-        values.put(HomeTableColumns.YIFAT_PRESENCE, yifatInfo[0]);
-        values.put(HomeTableColumns.ORI_LAST_PRESENCE, oriInfo[1]);
-        values.put(HomeTableColumns.YIFAT_LAST_PRESENCE, yifatInfo[1]);
+            Date current = new Date();
+            values.put(HomeTableColumns.LAST_UPDATE_TIME, current.getTime());
+            values.put(HomeTableColumns.TALL_LAMP_STATE, tallLamp.getString("state"));
+            values.put(HomeTableColumns.SOFA_LAMP_STATE, sofaLamp.getString("state"));
+            values.put(HomeTableColumns.WINDOW_LAMP_STATE, windowLamp.getString("state"));
 
-        String temperature = tempData.getString("temp");
-        values.put(HomeTableColumns.HOME_TEMP, temperature);
+            String[] oriInfo = persons.getString("Ori").split(": ");
+            String[] yifatInfo = persons.getString("Yifat").split(": ");
+            values.put(HomeTableColumns.ORI_PRESENCE, oriInfo[0]);
+            values.put(HomeTableColumns.YIFAT_PRESENCE, yifatInfo[0]);
+            values.put(HomeTableColumns.ORI_LAST_PRESENCE, oriInfo[1]);
+            values.put(HomeTableColumns.YIFAT_LAST_PRESENCE, yifatInfo[1]);
 
-        byte[] imageBytes = image.getBytes();
-        values.put(HomeTableColumns.HOME_PIC, imageBytes);
+            if (tempData != null) {
+                String temperature = tempData.getString("temp");
+                values.put(HomeTableColumns.HOME_TEMP, temperature);
+            }
 
-        //first delete all rows
-        getContentResolver().delete(HarelHome.HOME_STATE_URI, null, null);
 
-        Uri result = getContentResolver().insert(HarelHome.HOME_STATE_URI, values);
+            if (image != null) {
+                byte[] imageBytes = image.getBytes();
+                values.put(HomeTableColumns.HOME_PIC, imageBytes);
+            }
 
-        Log.d(LOG_TAG, "added new state result was "+result);
+
+            //first delete all rows
+            getContentResolver().delete(HarelHome.HOME_STATE_URI, null, null);
+
+            Uri result = getContentResolver().insert(HarelHome.HOME_STATE_URI, values);
+
+
+            Log.d(LOG_TAG, "added new state result was "+result);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private JSONObject getLampObject(JSONArray sockets, String macAddess) throws JSONException {

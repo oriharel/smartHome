@@ -1,13 +1,24 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="niyo.nfc.com.nfcori.fragments.CameraFragment">
+    android:elevation="16dp"
+    android:id="@+id/container"
+    android:background="@color/dkgray"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".Main2Activity">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
-</FrameLayout>
+    <ImageView
+        app:srcCompat="@drawable/broadstairs"
+        android:id="@+id/homeImage"
+        android:layout_marginTop="10dip"
+        android:elevation="24dp"
+        android:layout_width="322dip"
+        android:layout_height="242dip"
+        android:layout_gravity="center" />
+</LinearLayout>

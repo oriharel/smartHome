@@ -14,6 +14,7 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -44,14 +45,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 import niyo.nfc.com.nfcori.db.HomeTableColumns;
+import niyo.nfc.com.nfcori.fragments.CameraFragment;
+import niyo.nfc.com.nfcori.fragments.LightsFragment;
+import niyo.nfc.com.nfcori.fragments.OnFragmentInteractionListener;
+import niyo.nfc.com.nfcori.fragments.PresenceFragment;
 
 import static niyo.nfc.com.nfcori.HarelHome.AUTHORITY;
 
 public class Main2Activity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener{
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+        NavigationView.OnNavigationItemSelectedListener,
+        OnFragmentInteractionListener {
 
     public static final String LOG_TAG = Main2Activity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_GET_ACCOUNTS = 1;
@@ -71,6 +80,10 @@ public class Main2Activity extends AppCompatActivity
     Handler mHandler = new Handler();
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    public Boolean tallLampState;
+    public Boolean sofaLampState;
+    public Boolean windowLampState;
+    private List<LampStateListener> mLampListeners;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +116,8 @@ public class Main2Activity extends AppCompatActivity
         mViewPager = (ViewPager) findViewById(R.id.vpcontainer);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        mLampListeners = new ArrayList<>();
+
 //        Button onButton = (Button) findViewById(R.id.allOn);
 //        onButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -119,7 +134,7 @@ public class Main2Activity extends AppCompatActivity
 //            }
 //        });
 //
-//        setNfcListener();
+        setNfcListener();
 //
 //        final ImageView tallBulb = (ImageView) findViewById(R.id.tallBulb);
 //        tallBulb.setOnClickListener(new View.OnClickListener() {
@@ -272,7 +287,7 @@ public class Main2Activity extends AppCompatActivity
         }
     }
 
-    private void turnSingleLight(final String id, final ImageView bulbImage, final String socketName) {
+    public void turnSingleLight(final String id, final ImageView bulbImage, final String socketName) {
 
 
         String currState = (String)bulbImage.getTag();
@@ -324,7 +339,7 @@ public class Main2Activity extends AppCompatActivity
         task.execute(url, "true");
     }
 
-    private void turnTheLights(final String state) {
+    public void turnTheLights(final String state) {
 
         final Context context = this;
 
@@ -394,33 +409,38 @@ public class Main2Activity extends AppCompatActivity
         if (cursor.moveToFirst()) {
             int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
             String tallLampStateStr = cursor.getString(colTallStateIndex);
-            Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
+            tallLampState = Boolean.valueOf(tallLampStateStr);
 
             int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
             String sofaLampStateStr = cursor.getString(colSofaStateIndex);
-            Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
+            sofaLampState = Boolean.valueOf(sofaLampStateStr);
 
             int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
             String windowLampStateStr = cursor.getString(colWindowStateIndex);
-            Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
+            windowLampState = Boolean.valueOf(windowLampStateStr);
 
             int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
             String oriState = cursor.getString(oriPresIndex);
 
-            ImageView tallLamp = (ImageView)findViewById(R.id.tallBulb);
-            ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
-            ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
+//            ImageView tallLamp = (ImageView)findViewById(R.id.tallBulb);
+//            ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
+//            ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
+
+            for (LampStateListener listener :
+                    mLampListeners) {
+                listener.onChange(tallLampState, sofaLampState, windowLampState);
+            }
 
 //            updateBulbImage(tallLamp, tallLampState);
 //            updateBulbImage(sofaLamp, sofaLampState);
 //            updateBulbImage(windowLamp, windowLampState);
 
-            int homeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_PIC);
-            byte[] homeImage64 = cursor.getBlob(homeImageIndex);
-            Log.d(LOG_TAG, "received imageBase64: "+homeImage64.length);
-            ImageView homeImageView = (ImageView)findViewById(R.id.homeImage);
-            byte[] decodedString = Base64.decode(homeImage64, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//            int homeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_PIC);
+//            byte[] homeImage64 = cursor.getBlob(homeImageIndex);
+//            Log.d(LOG_TAG, "received imageBase64: "+homeImage64.length);
+//            ImageView homeImageView = (ImageView)findViewById(R.id.homeImage);
+//            byte[] decodedString = Base64.decode(homeImage64, Base64.DEFAULT);
+//            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 //            homeImageView.setImageBitmap(decodedByte);
 
             Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
@@ -499,37 +519,47 @@ public class Main2Activity extends AppCompatActivity
         return true;
     }
 
-    public static class ImageFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-        public ImageFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static ImageFragment newInstance(int sectionNumber) {
-            ImageFragment fragment = new ImageFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.home_main, container, false);
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
     }
+
+    @Override
+    public void registerForLampsStateChange(LampStateListener listener) {
+        mLampListeners.add(listener);
+    }
+
+//    public static class ImageFragment extends Fragment {
+//        /**
+//         * The fragment argument representing the section number for this
+//         * fragment.
+//         */
+//        private static final String ARG_SECTION_NUMBER = "section_number";
+//
+//        public ImageFragment() {
+//        }
+//
+//        /**
+//         * Returns a new instance of this fragment for the given section
+//         * number.
+//         */
+//        public static ImageFragment newInstance(int sectionNumber) {
+//            ImageFragment fragment = new ImageFragment();
+//            Bundle args = new Bundle();
+//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+//            fragment.setArguments(args);
+//            return fragment;
+//        }
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                                 Bundle savedInstanceState) {
+//            View rootView = inflater.inflate(R.layout.home_main, container, false);
+////            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+////            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+//            return rootView;
+//        }
+//    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -541,7 +571,17 @@ public class Main2Activity extends AppCompatActivity
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return ImageFragment.newInstance(position + 1);
+
+            switch (position) {
+                case 0:
+                    return LightsFragment.newInstance(position + 1);
+                case 1:
+                    return PresenceFragment.newInstance(position + 2);
+                case 2:
+                    return CameraFragment.newInstance(position + 3);
+                default:
+                    return LightsFragment.newInstance(position+1);
+            }
         }
 
         @Override
@@ -554,13 +594,14 @@ public class Main2Activity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Cameras";
-                case 1:
                     return "Lights";
-                case 2:
+                case 1:
                     return "Presence";
+                case 2:
+                    return "Cameras";
             }
             return null;
         }
     }
+
 }
