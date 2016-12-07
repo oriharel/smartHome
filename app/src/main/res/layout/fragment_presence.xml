@@ -1,48 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="niyo.nfc.com.nfcori.fragments.PresenceFragment">
+    android:elevation="16dp"
+    android:id="@+id/container"
+    android:background="@color/dkgray"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".Main2Activity">
 
-    <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
-        android:orientation="horizontal"
+    <TextView
+        android:text="Last Update:"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView4"
-            android:layout_weight="1" />
-
-        <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView5"
-            android:layout_weight="1" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:id="@+id/lastUpdate"
+        android:textColor="@color/ltgray"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/fab_margin" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <TextView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"
-            android:layout_weight="1" />
-
-        <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView2"
-            android:layout_weight="1" />
-    </LinearLayout>
+            android:layout_weight="1">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ori"
+                android:id="@+id/imageView2"
+                android:cropToPadding="false"
+                android:layout_margin="@dimen/bulb_padd" />
+
+            <TextView
+                android:text="Home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/oriState"
+                android:textColor="@android:color/holo_green_dark"
+                android:gravity="center" />
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/oriSince"
+                android:textColor="@color/ltgray"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/yifat"
+                android:id="@+id/imageView3"
+                android:layout_margin="@dimen/bulb_padd" />
+
+            <TextView
+                android:text="Away"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/yifatState"
+                android:textColor="@color/opaque_red"
+                android:gravity="center" />
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/yifatSince"
+                android:textColor="@color/ltgray"
+                android:gravity="center" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

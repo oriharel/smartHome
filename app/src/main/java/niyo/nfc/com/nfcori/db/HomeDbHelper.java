@@ -36,7 +36,7 @@ public class HomeDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        Log.d(LOG_TAG, "onCreate started");
+        Log.d(LOG_TAG, "onCreate started "+TABLE_HOME_CREATE);
         sqLiteDatabase.execSQL(TABLE_HOME_CREATE);
     }
 

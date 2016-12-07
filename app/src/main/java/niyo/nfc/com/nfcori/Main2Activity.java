@@ -30,6 +30,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -46,6 +47,7 @@ import android.widget.ImageView;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -83,7 +85,17 @@ public class Main2Activity extends AppCompatActivity
     public Boolean tallLampState;
     public Boolean sofaLampState;
     public Boolean windowLampState;
+
+    public Boolean oriState;
+    public Boolean yifatState;
+
+    public String oriLastStateTime;
+    public String yifatLastStateTime;
+
+    public String lastUpdateTime;
+
     private List<LampStateListener> mLampListeners;
+    private List<PresenceStateListener> mPresenceListeners;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,50 +128,13 @@ public class Main2Activity extends AppCompatActivity
         mViewPager = (ViewPager) findViewById(R.id.vpcontainer);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        PagerTabStrip strip = (PagerTabStrip)findViewById(R.id.vpstrip);
+//        strip.setTextSpacing(40);
+//        strip.setPadding(40, 40, 40, 40);
         mLampListeners = new ArrayList<>();
+        mPresenceListeners = new ArrayList<>();
 
-//        Button onButton = (Button) findViewById(R.id.allOn);
-//        onButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnTheLights("on");
-//            }
-//        });
-//
-//        Button offButton = (Button) findViewById(R.id.allOff);
-//        offButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnTheLights("off");
-//            }
-//        });
-//
         setNfcListener();
-//
-//        final ImageView tallBulb = (ImageView) findViewById(R.id.tallBulb);
-//        tallBulb.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("tallLamp", tallBulb, "Tall Lamp");
-//            }
-//        });
-//
-//        final ImageView windowBulb = (ImageView) findViewById(R.id.windowBulb);
-//        windowBulb.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("windowLamp", windowBulb, "Window Lamp");
-//            }
-//        });
-//
-//        final ImageView sofaBulb = (ImageView) findViewById(R.id.sofaBulb);
-//        sofaBulb.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                turnSingleLight("sofaLamp", sofaBulb, "Sofa Lamp");
-//            }
-//        });
-
         Intent notifIntent = new Intent("com.niyo.updateNotification");
         sendBroadcast(notifIntent);
         CreateSyncAccount();
@@ -420,20 +395,31 @@ public class Main2Activity extends AppCompatActivity
             windowLampState = Boolean.valueOf(windowLampStateStr);
 
             int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
-            String oriState = cursor.getString(oriPresIndex);
+            String oriStateStr = cursor.getString(oriPresIndex);
+            oriState = oriStateStr.toLowerCase().equals("home");
 
-//            ImageView tallLamp = (ImageView)findViewById(R.id.tallBulb);
-//            ImageView sofaLamp = (ImageView)findViewById(R.id.sofaBulb);
-//            ImageView windowLamp = (ImageView)findViewById(R.id.windowBulb);
+            int oriLastIndex = cursor.getColumnIndex(HomeTableColumns.ORI_LAST_PRESENCE);
+            oriLastStateTime = cursor.getString(oriLastIndex);
+
+            int yifatPresIndex = cursor.getColumnIndex(HomeTableColumns.YIFAT_PRESENCE);
+            String yifatStateStr = cursor.getString(yifatPresIndex);
+            yifatState = yifatStateStr.toLowerCase().equals("home");
+
+            int yifatLastIndex = cursor.getColumnIndex(HomeTableColumns.YIFAT_LAST_PRESENCE);
+            yifatLastStateTime = cursor.getString(yifatLastIndex);
+
+            int lastUpdateIndex = cursor.getColumnIndex(HomeTableColumns.LAST_UPDATE_TIME);
+            lastUpdateTime = cursor.getString(lastUpdateIndex);
 
             for (LampStateListener listener :
                     mLampListeners) {
                 listener.onChange(tallLampState, sofaLampState, windowLampState);
             }
 
-//            updateBulbImage(tallLamp, tallLampState);
-//            updateBulbImage(sofaLamp, sofaLampState);
-//            updateBulbImage(windowLamp, windowLampState);
+            for (PresenceStateListener listener :
+                    mPresenceListeners) {
+                listener.onChange(oriState, oriLastStateTime, yifatState, yifatLastStateTime, lastUpdateTime);
+            }
 
 //            int homeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_PIC);
 //            byte[] homeImage64 = cursor.getBlob(homeImageIndex);
@@ -527,6 +513,11 @@ public class Main2Activity extends AppCompatActivity
     @Override
     public void registerForLampsStateChange(LampStateListener listener) {
         mLampListeners.add(listener);
+    }
+
+    @Override
+    public void registerForPresenceChange(PresenceStateListener listener) {
+        mPresenceListeners.add(listener);
     }
 
 //    public static class ImageFragment extends Fragment {

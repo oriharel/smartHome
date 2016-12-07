@@ -19,6 +19,7 @@ public class HarelHome {
 
     public static final String[] HOME_STATE_PROJECTION = new String[] {
             HomeTableColumns._ID,
+            HomeTableColumns.LAST_UPDATE_TIME,
             HomeTableColumns.TALL_LAMP_STATE,
             HomeTableColumns.SOFA_LAMP_STATE,
             HomeTableColumns.WINDOW_LAMP_STATE,

@@ -44,6 +44,7 @@ public class HarelHomeProvider extends ContentProvider {
         sHomeStateProjectionMap.put(HomeTableColumns._ID, HomeTableColumns._ID);
 
         // Maps "title" to "title"
+        sHomeStateProjectionMap.put(HomeTableColumns.LAST_UPDATE_TIME, HomeTableColumns.LAST_UPDATE_TIME);
         sHomeStateProjectionMap.put(HomeTableColumns.TALL_LAMP_STATE, HomeTableColumns.TALL_LAMP_STATE);
 
         // Maps "note" to "note"

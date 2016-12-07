@@ -118,9 +118,19 @@ public class LightsFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_lights, container, false);
 
+
+
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         Main2Activity act = (Main2Activity)getActivity();
         Log.d(LOG_TAG, "tallLampState is: "+act.tallLampState);
 
+        final View view = getView();
         updateViews(view, act.tallLampState, act.sofaLampState, act.windowLampState);
         setupClickListeners(view);
 
@@ -130,22 +140,27 @@ public class LightsFragment extends Fragment {
                 updateViews(view, tallState, sofaState, windowState);
             }
         });
-
-        return view;
     }
 
     void updateViews(View view, Boolean tallState, Boolean sofaState, Boolean windowState) {
-        ImageView tallImage = (ImageView)view.findViewById(R.id.tallBulb);
-        tallImage.setImageResource(tallState ? R.drawable.on_bulb : R.drawable.off_bulb);
-        tallImage.setTag(tallState ? "on" : "off");
+        if (tallState != null) {
+            ImageView tallImage = (ImageView)view.findViewById(R.id.tallBulb);
+            tallImage.setImageResource(tallState ? R.drawable.on_bulb : R.drawable.off_bulb);
+            tallImage.setTag(tallState ? "on" : "off");
+        }
 
-        ImageView sofaImage = (ImageView)view.findViewById(R.id.sofaBulb);
-        sofaImage.setImageResource(sofaState ? R.drawable.on_bulb : R.drawable.off_bulb);
-        sofaImage.setTag(sofaState ? "on" : "off");
+        if (sofaState != null){
+            ImageView sofaImage = (ImageView)view.findViewById(R.id.sofaBulb);
+            sofaImage.setImageResource(sofaState ? R.drawable.on_bulb : R.drawable.off_bulb);
+            sofaImage.setTag(sofaState ? "on" : "off");
+        }
 
-        ImageView windowImage = (ImageView)view.findViewById(R.id.windowBulb);
-        windowImage.setImageResource(windowState ? R.drawable.on_bulb : R.drawable.off_bulb);
-        windowImage.setTag(windowState ? "on" : "off");
+        if (windowState != null){
+            ImageView windowImage = (ImageView)view.findViewById(R.id.windowBulb);
+            windowImage.setImageResource(windowState ? R.drawable.on_bulb : R.drawable.off_bulb);
+            windowImage.setTag(windowState ? "on" : "off");
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

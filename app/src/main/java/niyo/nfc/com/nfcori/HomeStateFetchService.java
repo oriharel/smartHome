@@ -140,7 +140,10 @@ public class HomeStateFetchService extends Service {
         stopSelf();
     }
 
-    private void insertStateToDb(JSONArray sockets, JSONObject persons, JSONObject tempData, String image) {
+    private void insertStateToDb(JSONArray sockets,
+                                 JSONObject persons,
+                                 JSONObject tempData,
+                                 String image) {
 
         Log.d(LOG_TAG, "insertStateToDb started");
         ContentValues values = new ContentValues();
