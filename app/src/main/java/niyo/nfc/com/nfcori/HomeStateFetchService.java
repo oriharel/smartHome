@@ -117,9 +117,10 @@ public class HomeStateFetchService extends Service {
             Log.d(LOG_TAG, "sockets: "+sockets);
             persons = state.getJSONObject("persons");
             Log.d(LOG_TAG, "persons: "+persons);
-//            tempData = state.getJSONObject("tempData");
-//            Log.d(LOG_TAG, "tempData: "+tempData);
-//            image = state.getString("image");
+            tempData = state.getJSONObject("tempData");
+            Log.d(LOG_TAG, "tempData: "+tempData);
+            image = state.getString("image");
+//            Log.d(LOG_TAG, "image: "+image);
 
 
         } catch (JSONException e) {

@@ -5,5 +5,8 @@ package niyo.nfc.com.nfcori;
  */
 
 public abstract class LampStateListener {
-    public abstract void onChange(Boolean tallState, Boolean sofaState, Boolean windowState);
+    public abstract void onChange(Boolean tallState,
+                                  Boolean sofaState,
+                                  Boolean windowState,
+                                  String temp);
 }

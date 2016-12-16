@@ -14,11 +14,17 @@
     tools:context=".Main2Activity">
 
     <ImageView
-        app:srcCompat="@drawable/broadstairs"
-        android:id="@+id/homeImage"
-        android:layout_marginTop="10dip"
-        android:elevation="24dp"
-        android:layout_width="322dip"
-        android:layout_height="242dip"
-        android:layout_gravity="center" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/download"
+        android:id="@+id/livingImage"
+        android:layout_weight="1"
+        android:layout_margin="@dimen/bulb_padd" />
+
+    <WebView
+        android:layout_width="match_parent"
+        android:id="@+id/camWebView"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="@dimen/bulb_padd" />
 </LinearLayout>

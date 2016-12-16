@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import niyo.nfc.com.nfcori.LampStateListener;
 import niyo.nfc.com.nfcori.Main2Activity;
@@ -62,8 +63,6 @@ public class LightsFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getInt(ARG_PARAM1);
         }
-
-
     }
 
     private void setupClickListeners(View view) {
@@ -117,9 +116,6 @@ public class LightsFragment extends Fragment {
         // Inflate the layout for this fragment
 
         final View view = inflater.inflate(R.layout.fragment_lights, container, false);
-
-
-
         return view;
     }
 
@@ -131,18 +127,24 @@ public class LightsFragment extends Fragment {
         Log.d(LOG_TAG, "tallLampState is: "+act.tallLampState);
 
         final View view = getView();
-        updateViews(view, act.tallLampState, act.sofaLampState, act.windowLampState);
+        updateViews(view, act.tallLampState, act.sofaLampState, act.windowLampState, act.temp);
         setupClickListeners(view);
 
         act.registerForLampsStateChange(new LampStateListener() {
             @Override
-            public void onChange(Boolean tallState, Boolean sofaState, Boolean windowState) {
-                updateViews(view, tallState, sofaState, windowState);
+            public void onChange(Boolean tallState,
+                                 Boolean sofaState,
+                                 Boolean windowState,
+                                 String temp) {
+                updateViews(view, tallState, sofaState, windowState, temp);
             }
         });
     }
 
-    void updateViews(View view, Boolean tallState, Boolean sofaState, Boolean windowState) {
+    void updateViews(View view, Boolean tallState,
+                     Boolean sofaState,
+                     Boolean windowState,
+                     String temp) {
         if (tallState != null) {
             ImageView tallImage = (ImageView)view.findViewById(R.id.tallBulb);
             tallImage.setImageResource(tallState ? R.drawable.on_bulb : R.drawable.off_bulb);
@@ -159,6 +161,11 @@ public class LightsFragment extends Fragment {
             ImageView windowImage = (ImageView)view.findViewById(R.id.windowBulb);
             windowImage.setImageResource(windowState ? R.drawable.on_bulb : R.drawable.off_bulb);
             windowImage.setTag(windowState ? "on" : "off");
+        }
+
+        if (temp != null) {
+            TextView tempView = (TextView)view.findViewById(R.id.temp);
+            tempView.setText(temp);
         }
 
     }

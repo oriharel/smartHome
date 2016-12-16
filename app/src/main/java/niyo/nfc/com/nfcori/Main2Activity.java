@@ -92,10 +92,15 @@ public class Main2Activity extends AppCompatActivity
     public String oriLastStateTime;
     public String yifatLastStateTime;
 
+    public String temp;
+
     public String lastUpdateTime;
+
+    public byte[] homeImage64;
 
     private List<LampStateListener> mLampListeners;
     private List<PresenceStateListener> mPresenceListeners;
+    private List<CameraStateListener> mCameraListeners;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +138,7 @@ public class Main2Activity extends AppCompatActivity
 //        strip.setPadding(40, 40, 40, 40);
         mLampListeners = new ArrayList<>();
         mPresenceListeners = new ArrayList<>();
+        mCameraListeners = new ArrayList<>();
 
         setNfcListener();
         Intent notifIntent = new Intent("com.niyo.updateNotification");
@@ -411,9 +417,20 @@ public class Main2Activity extends AppCompatActivity
             int lastUpdateIndex = cursor.getColumnIndex(HomeTableColumns.LAST_UPDATE_TIME);
             lastUpdateTime = cursor.getString(lastUpdateIndex);
 
+            int homeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_PIC);
+            homeImage64 = cursor.getBlob(homeImageIndex);
+
+            int tempIndex = cursor.getColumnIndex(HomeTableColumns.HOME_TEMP);
+            temp = cursor.getString(tempIndex);
+
+            if (homeImage64 != null) {
+                Log.d(LOG_TAG, "received imageBase64: "+homeImage64.length);
+            }
+
+
             for (LampStateListener listener :
                     mLampListeners) {
-                listener.onChange(tallLampState, sofaLampState, windowLampState);
+                listener.onChange(tallLampState, sofaLampState, windowLampState, temp);
             }
 
             for (PresenceStateListener listener :
@@ -421,13 +438,11 @@ public class Main2Activity extends AppCompatActivity
                 listener.onChange(oriState, oriLastStateTime, yifatState, yifatLastStateTime, lastUpdateTime);
             }
 
-//            int homeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_PIC);
-//            byte[] homeImage64 = cursor.getBlob(homeImageIndex);
-//            Log.d(LOG_TAG, "received imageBase64: "+homeImage64.length);
-//            ImageView homeImageView = (ImageView)findViewById(R.id.homeImage);
-//            byte[] decodedString = Base64.decode(homeImage64, Base64.DEFAULT);
-//            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//            homeImageView.setImageBitmap(decodedByte);
+            for (CameraStateListener listener :
+                    mCameraListeners) {
+                listener.onChange(homeImage64);
+            }
+
 
             Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
                     " sofaLampState: "+sofaLampStateStr+
@@ -518,6 +533,11 @@ public class Main2Activity extends AppCompatActivity
     @Override
     public void registerForPresenceChange(PresenceStateListener listener) {
         mPresenceListeners.add(listener);
+    }
+
+    @Override
+    public void registerForCameraChange(CameraStateListener listener) {
+        mCameraListeners.add(listener);
     }
 
 //    public static class ImageFragment extends Fragment {

@@ -66,4 +66,13 @@
             android:layout_gravity="center"
             android:layout_weight="1" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/temp"
+        android:textColor="@color/ltgray"
+        android:text="dsdd"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/fab_margin" />
 </LinearLayout>

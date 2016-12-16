@@ -2,6 +2,7 @@ package niyo.nfc.com.nfcori.fragments;
 
 import android.net.Uri;
 
+import niyo.nfc.com.nfcori.CameraStateListener;
 import niyo.nfc.com.nfcori.LampStateListener;
 import niyo.nfc.com.nfcori.PresenceStateListener;
 
@@ -13,6 +14,7 @@ public interface OnFragmentInteractionListener {
     void onFragmentInteraction(Uri uri);
     void registerForLampsStateChange(LampStateListener listener);
     void registerForPresenceChange(PresenceStateListener listener);
+    void registerForCameraChange(CameraStateListener listener);
 }
 
 
