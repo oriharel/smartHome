@@ -8,9 +8,10 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
-import niyo.nfc.com.nfcori.db.HomeTableColumns;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import static niyo.nfc.com.nfcori.Main2Activity.s_url;
+import niyo.nfc.com.nfcori.db.HomeTableColumns;
 
 /**
  * Created by oriharel on 24/10/2016.
@@ -34,11 +35,18 @@ public class LightsBroadcastReceiver extends BroadcastReceiver {
 
                 Log.d(LOG_TAG, "all sockets success");
 
-                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
-                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
-                        HomeStateFetchService.STATE_EVENT_NAME);
-                Log.d(LOG_TAG, "starting sync service...");
-                context.startService(serviceIntent);
+//                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
+//                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
+//                        HomeStateFetchService.STATE_EVENT_NAME);
+//                Log.d(LOG_TAG, "starting sync service...");
+//                context.startService(serviceIntent);
+
+                String dataStr = (String)data;
+                try {
+                    HomeStateFetchService.processState(context, new JSONObject(dataStr));
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "unable to parse "+dataStr);
+                }
             }
 
             @Override
@@ -83,11 +91,11 @@ public class LightsBroadcastReceiver extends BroadcastReceiver {
                         state = "";
                 }
 
-                url = s_url+"/sockets/"+bulbName+"/"+state;
+                url = Utils.getHomeURL()+"/sockets/"+bulbName+"/"+state;
             }
             else {
                 String allState = intent.getStringExtra(ALL_STATE_EXTRA);
-                url = s_url+"/all/sockets/"+allState;
+                url = Utils.getHomeURL()+"/all/sockets/"+allState;
             }
 
             GenericHttpRequestTask task = new GenericHttpRequestTask(caller);

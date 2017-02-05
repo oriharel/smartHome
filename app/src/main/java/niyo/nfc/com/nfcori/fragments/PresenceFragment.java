@@ -1,6 +1,22 @@
 package niyo.nfc.com.nfcori.fragments;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.ComposeShader;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.RadialGradient;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -16,6 +33,9 @@ import java.util.Calendar;
 import niyo.nfc.com.nfcori.Main2Activity;
 import niyo.nfc.com.nfcori.PresenceStateListener;
 import niyo.nfc.com.nfcori.R;
+
+import static android.R.attr.width;
+import static android.support.v7.appcompat.R.attr.height;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -86,7 +106,90 @@ public class PresenceFragment extends Fragment {
             }
         });
 
+        ImageView oriImage = (ImageView)view.findViewById(R.id.oriImageView);
+        ImageView yifatImage = (ImageView)view.findViewById(R.id.yifatImageView);
+
+
+
+        oriImage.setImageBitmap(getRoundImageBitmap(R.drawable.ori));
+        yifatImage.setImageBitmap(getRoundImageBitmap(R.drawable.yifat));
+
+
         return view;
+    }
+
+    private Bitmap getRoundImageBitmap(int resId) {
+        Bitmap mbitmap = BitmapFactory.decodeResource(getResources(), resId);
+
+        Bitmap imageRounded = Bitmap.createBitmap(mbitmap.getWidth(), mbitmap.getHeight(), mbitmap.getConfig());
+        Canvas canvas = new Canvas(imageRounded);
+        Paint mpaint = new Paint();
+        mpaint.setAntiAlias(true);
+        mpaint.setShader(new BitmapShader(mbitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+        canvas.drawRoundRect((new RectF(0, 0, mbitmap.getWidth(), mbitmap.getHeight())), 750, 750, mpaint);// Round Image Corner 100 100 100 100
+
+        return imageRounded;
+    }
+
+    class RoundImage extends Drawable {
+
+        private final float mCornerRadius;
+        private final RectF mRect = new RectF();
+        private final BitmapShader mBitmapShader;
+        private final Paint mPaint;
+        private final int mMargin;
+
+        RoundImage(Bitmap bitmap, float cornerRadius, int margin) {
+            mCornerRadius = cornerRadius;
+
+            mBitmapShader = new BitmapShader(bitmap,
+                    Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+
+            mPaint = new Paint();
+            mPaint.setAntiAlias(true);
+            mPaint.setShader(mBitmapShader);
+
+            mMargin = margin;
+
+            mRect.set(margin, margin, 360, 360);
+        }
+
+//        @Override
+//        protected void onBoundsChange(Rect bounds) {
+//            super.onBoundsChange(bounds);
+//            mRect.set(mMargin, mMargin, bounds.width() - mMargin, bounds.height() - mMargin);
+
+//            RadialGradient vignette = new RadialGradient(
+//                    mRect.centerX(), mRect.centerY() * 1.0f / 0.7f, mRect.centerX() * 1.3f,
+//                    new int[] { 0, 0, 0x7f000000 }, new float[] { 0.0f, 0.7f, 1.0f },
+//                    Shader.TileMode.CLAMP);
+//
+//            Matrix oval = new Matrix();
+//            oval.setScale(1.0f, 0.7f);
+//            vignette.setLocalMatrix(oval);
+
+//            mPaint.setShader(mBitmapShader);
+//        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            canvas.drawRoundRect(mRect, mCornerRadius, mCornerRadius, mPaint);
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            mPaint.setAlpha(alpha);
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter colorFilter) {
+            mPaint.setColorFilter(colorFilter);
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
     }
 
     private void updateViews(View view,

@@ -13,6 +13,14 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".Main2Activity">
 
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/download"
+        android:id="@+id/startCam"
+        android:layout_weight="1"
+        android:elevation="0dp"
+        android:background="@color/dkgray" />
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,10 +29,4 @@
         android:layout_weight="1"
         android:layout_margin="@dimen/bulb_padd" />
 
-    <WebView
-        android:layout_width="match_parent"
-        android:id="@+id/camWebView"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout_margin="@dimen/bulb_padd" />
 </LinearLayout>

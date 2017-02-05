@@ -2,49 +2,25 @@ package niyo.nfc.com.nfcori;
 
 import android.app.Service;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
-
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import niyo.nfc.com.nfcori.db.HomeTableColumns;
 
 public class HomeStateFetchService extends Service {
 
     public static final String LOG_TAG = HomeStateFetchService.class.getSimpleName();
-    public static final String HOME_URL = "https://oriharel.herokuapp.com";
     public static final String EVENT_NAMT_EXTRA = "event_name";
     public static final String STATE_EVENT_NAME = "state";
     public static final String LAST_STATE_EVENT_NAME = "lastStateForClients";
-    Socket mSocket;
-    Timer mTimer;
-    private Emitter.Listener stateListener = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            processEvent(STATE_EVENT_NAME, this, args);
-        }
-    };
-
-    private Emitter.Listener lastStateListener = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            processEvent(LAST_STATE_EVENT_NAME, this, args);
-        }
-    };
 
     private static HashMap<String, String> sLampNameToMac;
     static {
@@ -60,98 +36,92 @@ public class HomeStateFetchService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        try {
+        final Context context = this;
+        final ServiceCaller caller = new ServiceCaller() {
+            @Override
+            public void success(Object data) {
 
-            if (intent == null) {
-                stopSelf();
-                return START_STICKY;
-            }
-            mSocket = IO.socket(HOME_URL);
-            final String eventName = intent.getStringExtra(EVENT_NAMT_EXTRA);
+                Log.d(LOG_TAG, "state fetched successfully");
+                String dataStr = (String)data;
 
-            Emitter.Listener listener;
-            if (eventName.equals(STATE_EVENT_NAME)) {
-                listener = stateListener;
-            }
-            else {
-                listener = lastStateListener;
-            }
-
-            final Emitter.Listener finalListener = listener;
-
-            mSocket.on(eventName, listener);
-            Log.d(LOG_TAG, "connecting socket on "+HOME_URL+" and waiting for "+eventName);
-            mSocket.connect();
-
-            mTimer = new Timer();
-            Log.d(LOG_TAG, "starting a timer for the background fetch");
-            mTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Log.e(LOG_TAG, "time out expired for "+eventName+"...");
-                    mSocket.disconnect();
-                    Log.e(LOG_TAG, "unregistering finalListener from "+eventName+" because of timeout");
-                    mSocket.off(eventName, finalListener);
+                try {
+                    processState(context, new JSONObject(dataStr));
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "error parsing state: "+data);
+                }
+                finally {
                     stopSelf();
                 }
-            }, 60*1000*3);
+            }
 
-        } catch (URISyntaxException e) {
-            Log.e(LOG_TAG, "error creating socket", e);
-        }
+            @Override
+            public void failure(Object data, String description) {
+                Log.e(LOG_TAG, "Error receiving state "+description);
+                stopSelf();
+            }
+        };
 
+        GenericHttpRequestTask task = new GenericHttpRequestTask(caller);
+
+        String url = Utils.getHomeURL() + "/state";
+        task.execute(url);
         return START_STICKY;
     }
 
-    private void processEvent(String eventName, Emitter.Listener listener, Object... args) {
-        Log.d(LOG_TAG, "received "+eventName+" message from socket");
-        mTimer.cancel();
-        JSONObject state = (JSONObject)args[0];
+    public static void processState(Context context, JSONObject state) {
         JSONArray sockets = null;
         JSONObject persons = null;
         JSONObject tempData = null;
         String image = null;
+        String camImage = null;
 
         try {
-            sockets = state.getJSONArray("sockets");
-            Log.d(LOG_TAG, "sockets: "+sockets);
-            persons = state.getJSONObject("persons");
-            Log.d(LOG_TAG, "persons: "+persons);
-            tempData = state.getJSONObject("tempData");
-            Log.d(LOG_TAG, "tempData: "+tempData);
-            image = state.getString("image");
-//            Log.d(LOG_TAG, "image: "+image);
+            if (state.has("sockets")) {
+                sockets = state.getJSONArray("sockets");
+                Log.d(LOG_TAG, "sockets: "+sockets);
+            }
 
+            if (state.has("persons")) {
+                persons = state.getJSONObject("persons");
+                Log.d(LOG_TAG, "persons: "+persons);
+            }
+
+            if (state.has("tempDatat")) {
+                tempData = state.getJSONObject("tempData");
+                Log.d(LOG_TAG, "tempData: "+tempData);
+            }
+
+            if (state.has("image")) {
+                image = state.getString("image");
+            }
+
+            if (state.has("camImage")) {
+                camImage = state.getString("camImage");
+            }
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "error processing state: "+state, e);
         }
         finally {
-            insertStateToDb(sockets, persons, tempData, image);
+            insertStateToDb(context, sockets, persons, tempData, image, camImage);
         }
-
-        Log.d(LOG_TAG, "disconnecting socket now...");
-        mSocket.disconnect();
-        Log.d(LOG_TAG, "unregistering listener from "+eventName);
-        mSocket.off(eventName, listener);
 
         Log.d(LOG_TAG, "stopping service now...");
         Intent notifIntent = new Intent("com.niyo.updateNotification");
-        sendBroadcast(notifIntent);
-        stopSelf();
+        context.sendBroadcast(notifIntent);
     }
 
-    private void insertStateToDb(JSONArray sockets,
-                                 JSONObject persons,
-                                 JSONObject tempData,
-                                 String image) {
+    public static void insertStateToDb(Context context, JSONArray sockets,
+                                       JSONObject persons,
+                                       JSONObject tempData,
+                                       String image,
+                                       String camImage) {
 
         Log.d(LOG_TAG, "insertStateToDb started");
         ContentValues values = new ContentValues();
 
-        JSONObject tallLamp = null;
         try {
-            tallLamp = getLampObject(sockets, sLampNameToMac.get("tallLamp"));
+            JSONObject tallLamp = getLampObject(sockets, sLampNameToMac.get("tallLamp"));
 
             JSONObject sofaLamp = getLampObject(sockets, sLampNameToMac.get("sofaLamp"));
             JSONObject windowLamp = getLampObject(sockets, sLampNameToMac.get("windowLamp"));
@@ -180,11 +150,16 @@ public class HomeStateFetchService extends Service {
                 values.put(HomeTableColumns.HOME_PIC, imageBytes);
             }
 
+            if (camImage != null) {
+                byte[] camImageBytes = camImage.getBytes();
+                values.put(HomeTableColumns.HOME_CAM_PIC, camImageBytes);
+            }
+
 
             //first delete all rows
-            getContentResolver().delete(HarelHome.HOME_STATE_URI, null, null);
+            context.getContentResolver().delete(HarelHome.HOME_STATE_URI, null, null);
 
-            Uri result = getContentResolver().insert(HarelHome.HOME_STATE_URI, values);
+            Uri result = context.getContentResolver().insert(HarelHome.HOME_STATE_URI, values);
 
 
             Log.d(LOG_TAG, "added new state result was "+result);
@@ -193,7 +168,7 @@ public class HomeStateFetchService extends Service {
         }
     }
 
-    private JSONObject getLampObject(JSONArray sockets, String macAddess) throws JSONException {
+    private static JSONObject getLampObject(JSONArray sockets, String macAddess) throws JSONException {
         JSONObject result = new JSONObject();
 
         for (int i = 0; i < sockets.length(); i++) {

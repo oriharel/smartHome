@@ -56,6 +56,7 @@ public class HarelHomeProvider extends ContentProvider {
         sHomeStateProjectionMap.put(HomeTableColumns.YIFAT_LAST_PRESENCE, HomeTableColumns.YIFAT_LAST_PRESENCE);
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_TEMP, HomeTableColumns.HOME_TEMP);
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_PIC, HomeTableColumns.HOME_PIC);
+        sHomeStateProjectionMap.put(HomeTableColumns.HOME_CAM_PIC, HomeTableColumns.HOME_CAM_PIC);
         sHomeStateProjectionMap.put(HomeTableColumns.STATE_FETCH_IN_PROGRESS, HomeTableColumns.STATE_FETCH_IN_PROGRESS);
 
     }

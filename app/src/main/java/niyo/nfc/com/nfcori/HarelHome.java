@@ -28,6 +28,7 @@ public class HarelHome {
             HomeTableColumns.ORI_LAST_PRESENCE,
             HomeTableColumns.YIFAT_LAST_PRESENCE,
             HomeTableColumns.HOME_TEMP,
-            HomeTableColumns.HOME_PIC
+            HomeTableColumns.HOME_PIC,
+            HomeTableColumns.HOME_CAM_PIC
     };
 }

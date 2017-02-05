@@ -14,7 +14,8 @@ public class GenericHttpRequestTask extends AsyncTask<String, Void, Integer> {
 	private static final String LOG_TAG = GenericHttpRequestTask.class.getSimpleName();
 	private ServiceCaller mCaller;
 	private String mMsg;
-    public static final String BASE_URL = "http://niyoapi.appspot.com";
+    public static final String s_uuid = "f589cad6-49bf-4d1b-9091-4ba9ef1d466b";
+//    public static final String BASE_URL = "http://niyoapi.appspot.com";
 	
 	public GenericHttpRequestTask(ServiceCaller caller) {
 		
@@ -29,6 +30,8 @@ public class GenericHttpRequestTask extends AsyncTask<String, Void, Integer> {
         	URL url = new URL(params[0]);
         	Log.d(LOG_TAG, "starting http request with "+url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            String cookie = "uuid="+s_uuid;
+            con.setRequestProperty("Cookie", cookie);
             if (params.length > 1) {
                 con.setDoOutput(Boolean.valueOf(params[1]));
             }

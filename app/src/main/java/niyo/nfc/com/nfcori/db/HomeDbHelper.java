@@ -27,7 +27,8 @@ public class HomeDbHelper extends SQLiteOpenHelper {
                     + HomeTableColumns.YIFAT_LAST_PRESENCE + " DATE, "
                     + HomeTableColumns.HOME_TEMP + " FLOAT, "
                     + HomeTableColumns.STATE_FETCH_IN_PROGRESS + " BOOLEAN, "
-                    + HomeTableColumns.HOME_PIC + " BLOB);";
+                    + HomeTableColumns.HOME_PIC + " BLOB,"
+                    + HomeTableColumns.HOME_CAM_PIC + " BLOB);";
 
     public HomeDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
                         int version) {

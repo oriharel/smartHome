@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.text.DecimalFormat;
 
 import niyo.nfc.com.nfcori.LampStateListener;
 import niyo.nfc.com.nfcori.Main2Activity;
@@ -165,7 +166,15 @@ public class LightsFragment extends Fragment {
 
         if (temp != null) {
             TextView tempView = (TextView)view.findViewById(R.id.temp);
-            tempView.setText(temp);
+            try {
+                Double tempDbl = Double.valueOf(temp);
+                String formattedTemp = new DecimalFormat("#.#").format(tempDbl) + " \u2103";
+                tempView.setText(formattedTemp);
+            }
+            catch (Exception exc) {
+                Log.e(LOG_TAG, "cannot parse double "+temp);
+            }
+
         }
 
     }

@@ -45,6 +45,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,7 +70,7 @@ public class Main2Activity extends AppCompatActivity
     public static final String LOG_TAG = Main2Activity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_GET_ACCOUNTS = 1;
 //    Account mAccount;
-    public static final String s_url = "https://oriharel.herokuapp.com";
+//    public static final String s_url = "https://oriharel.herokuapp.com";
 
     public static final String ACCOUNT_TYPE = "harelHome";
     // The account name
@@ -97,6 +100,7 @@ public class Main2Activity extends AppCompatActivity
     public String lastUpdateTime;
 
     public byte[] homeImage64;
+    public byte[] homeCamImage64;
 
     private List<LampStateListener> mLampListeners;
     private List<PresenceStateListener> mPresenceListeners;
@@ -141,7 +145,7 @@ public class Main2Activity extends AppCompatActivity
         mCameraListeners = new ArrayList<>();
 
         setNfcListener();
-        Intent notifIntent = new Intent("com.niyo.updateNotification");
+        Intent notifIntent = new Intent(this, NotificationReceiver.class);
         sendBroadcast(notifIntent);
         CreateSyncAccount();
         setUpSync();
@@ -160,12 +164,31 @@ public class Main2Activity extends AppCompatActivity
             }
         };
         registerForChanges();
+        refreshData();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         getLoaderManager().restartLoader(0, null, this);
+
+        final ServiceCaller caller = new ServiceCaller() {
+            @Override
+            public void success(Object data) {
+
+                Log.d(LOG_TAG, "cam stopped successfully");
+
+            }
+
+            @Override
+            public void failure(Object data, String description) {
+                Log.e(LOG_TAG, "failed to stop cam");
+            }
+        };
+
+        GenericHttpRequestTask task = new GenericHttpRequestTask(caller);
+        String camUrl = Utils.getHomeURL()+"/cam/stop?uuid=f589cad6-49bf-4d1b-9091-4ba9ef1d466b";
+        task.execute(camUrl);
     }
 
     private void registerForChanges() {
@@ -279,13 +302,9 @@ public class Main2Activity extends AppCompatActivity
         Log.d(LOG_TAG, "turnSingleLight started with "+id+" current state is: "+currState);
 
         String state = "on";
-        Boolean stateBool = true;
         if (currState.equals("on")) {
             state = "off";
-            stateBool = false;
         }
-
-//        updateBulbImage(bulbImage, stateBool);
 
         final Context context = this;
 
@@ -297,10 +316,12 @@ public class Main2Activity extends AppCompatActivity
 
                 Snackbar.make(bulbImage, socketName + " turned  state  successfully", Snackbar.LENGTH_LONG)
                         .show();
-                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
-                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
-                        HomeStateFetchService.STATE_EVENT_NAME);
-                context.startService(serviceIntent);
+                String dataStr = (String)data;
+                try {
+                    HomeStateFetchService.processState(context, new JSONObject(dataStr));
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "unable to parse "+dataStr);
+                }
 
             }
 
@@ -316,7 +337,7 @@ public class Main2Activity extends AppCompatActivity
             }
         };
         GenericHttpRequestTask task = new GenericHttpRequestTask(caller);
-        String url = s_url + "/sockets/" + id + "/" + state;
+        String url = Utils.getHomeURL() + "/sockets/" + id + "/" + state;
         task.execute(url, "true");
     }
 
@@ -329,10 +350,16 @@ public class Main2Activity extends AppCompatActivity
             public void success(Object data) {
 
                 Log.d(LOG_TAG, "all sockets are " + state + "?");
-                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
-                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
-                        HomeStateFetchService.STATE_EVENT_NAME);
-                context.startService(serviceIntent);
+//                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
+//                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
+//                        HomeStateFetchService.STATE_EVENT_NAME);
+//                context.startService(serviceIntent);
+                String dataStr = (String)data;
+                try {
+                    HomeStateFetchService.processState(context, new JSONObject(dataStr));
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "unable to parse "+dataStr);
+                }
             }
 
             @Override
@@ -342,7 +369,7 @@ public class Main2Activity extends AppCompatActivity
         };
 
         GenericHttpRequestTask task = new GenericHttpRequestTask(caller);
-        String url = s_url + "/all/sockets/" + state;
+        String url = Utils.getHomeURL() + "/all/sockets/" + state;
         task.execute(url, "true");
 
     }
@@ -427,6 +454,13 @@ public class Main2Activity extends AppCompatActivity
                 Log.d(LOG_TAG, "received imageBase64: "+homeImage64.length);
             }
 
+            int camHomeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_CAM_PIC);
+            homeCamImage64 = cursor.getBlob(camHomeImageIndex);
+
+            if (homeCamImage64 != null) {
+                Log.d(LOG_TAG, "received homeCamImage64: "+homeCamImage64.length);
+            }
+
 
             for (LampStateListener listener :
                     mLampListeners) {
@@ -480,6 +514,14 @@ public class Main2Activity extends AppCompatActivity
         return true;
     }
 
+    private void refreshData(){
+        Intent serviceIntent = new Intent(this, HomeStateFetchService.class);
+        serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
+                HomeStateFetchService.LAST_STATE_EVENT_NAME);
+        startService(serviceIntent);
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -489,7 +531,11 @@ public class Main2Activity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        if (id == R.id.action_refresh) {
+            refreshData();
         }
 
         return super.onOptionsItemSelected(item);
@@ -539,38 +585,6 @@ public class Main2Activity extends AppCompatActivity
     public void registerForCameraChange(CameraStateListener listener) {
         mCameraListeners.add(listener);
     }
-
-//    public static class ImageFragment extends Fragment {
-//        /**
-//         * The fragment argument representing the section number for this
-//         * fragment.
-//         */
-//        private static final String ARG_SECTION_NUMBER = "section_number";
-//
-//        public ImageFragment() {
-//        }
-//
-//        /**
-//         * Returns a new instance of this fragment for the given section
-//         * number.
-//         */
-//        public static ImageFragment newInstance(int sectionNumber) {
-//            ImageFragment fragment = new ImageFragment();
-//            Bundle args = new Bundle();
-//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-//            fragment.setArguments(args);
-//            return fragment;
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                                 Bundle savedInstanceState) {
-//            View rootView = inflater.inflate(R.layout.home_main, container, false);
-////            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-////            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-//            return rootView;
-//        }
-//    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 

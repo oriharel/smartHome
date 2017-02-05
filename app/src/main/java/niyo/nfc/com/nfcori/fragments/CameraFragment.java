@@ -1,6 +1,7 @@
 package niyo.nfc.com.nfcori.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -13,13 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 import niyo.nfc.com.nfcori.CameraStateListener;
+import niyo.nfc.com.nfcori.GenericHttpRequestTask;
+import niyo.nfc.com.nfcori.HomeStateFetchService;
 import niyo.nfc.com.nfcori.Main2Activity;
 import niyo.nfc.com.nfcori.R;
+import niyo.nfc.com.nfcori.Utils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +42,9 @@ public class CameraFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private Integer mParam1;
+
+    private VideoView mVideoView;
+    private MediaController mController;
 
     private OnFragmentInteractionListener mListener;
 
@@ -83,15 +91,21 @@ public class CameraFragment extends Fragment {
 
         final View view = getView();
 
-        WebView wv = (WebView) view.findViewById(R.id.camWebView);
-        WebSettings settings = wv.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        if (wv != null) {
-            wv.loadUrl("http://10.0.0.7:5000");
+        if (view != null) {
+            ImageButton camBtn = (ImageButton)view.findViewById(R.id.startCam);
+            camBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String camUrl = Utils.getHomeURL()+"/cam/start?uuid=f589cad6-49bf-4d1b-9091-4ba9ef1d466b";
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse(camUrl), "video/mpeg");
+                    startActivity(intent);
+                }
+            });
         }
 
         updateViews(view, act.homeImage64);
+        updateCamSnapshot(view, act.homeCamImage64);
 
         act.registerForCameraChange(new CameraStateListener() {
             @Override
@@ -108,6 +122,17 @@ public class CameraFragment extends Fragment {
             byte[] decodedString = Base64.decode(homeImage64, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             homeImageView.setImageBitmap(decodedByte);
+        }
+
+    }
+
+    private void updateCamSnapshot(View view, byte[] camHomeImage64) {
+
+        if (camHomeImage64 != null) {
+            ImageButton camHomeImageView = (ImageButton)view.findViewById(R.id.startCam);
+            byte[] decodedString = Base64.decode(camHomeImage64, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            camHomeImageView.setImageBitmap(decodedByte);
         }
 
     }

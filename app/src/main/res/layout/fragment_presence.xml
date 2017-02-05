@@ -35,9 +35,9 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:srcCompat="@drawable/ori"
-                android:id="@+id/imageView2"
+                android:id="@+id/oriImageView"
                 android:cropToPadding="false"
                 android:layout_margin="@dimen/bulb_padd" />
 
@@ -66,9 +66,9 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:srcCompat="@drawable/yifat"
-                android:id="@+id/imageView3"
+                android:id="@+id/yifatImageView"
                 android:layout_margin="@dimen/bulb_padd" />
 
             <TextView

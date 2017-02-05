@@ -18,6 +18,7 @@ public class HomeTableColumns implements BaseColumns {
     public static final String YIFAT_LAST_PRESENCE = "yifat_last_presence";
     public static final String HOME_TEMP = "home_temp";
     public static final String HOME_PIC = "home_pic";
+    public static final String HOME_CAM_PIC = "home_cam_pic";
     public static final String STATE_FETCH_IN_PROGRESS = "state_fetching";
 
     public static final int COLUMN_ID_PATH_INDEX = 1;

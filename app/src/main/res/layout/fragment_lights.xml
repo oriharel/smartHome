@@ -19,36 +19,89 @@
         android:id="@+id/bulbLayout"
         >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/off_bulb"
-            android:id="@+id/tallBulb"
-            android:layout_weight="1"
-            android:padding="@dimen/bulb_padd" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/off_bulb"
-            android:id="@+id/sofaBulb"
-            android:layout_weight="1"
-            android:padding="@dimen/bulb_padd" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/off_bulb"
+                android:id="@+id/tallBulb"
+                android:layout_weight="1"
+                android:padding="@dimen/bulb_padd" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/off_bulb"
-            android:id="@+id/windowBulb"
-            android:layout_weight="1"
-            android:padding="@dimen/bulb_padd" />
+            <TextView
+                android:text="Tall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2"
+                android:layout_weight="1"
+                android:textColor="@color/ltgray"
+                android:gravity="center"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/off_bulb"
+                android:id="@+id/sofaBulb"
+                android:layout_weight="1"
+                android:padding="@dimen/bulb_padd" />
+
+            <TextView
+                android:text="Door"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView3"
+                android:layout_weight="1"
+                android:textColor="@color/ltgray"
+                android:gravity="center"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/off_bulb"
+                android:id="@+id/windowBulb"
+                android:layout_weight="1"
+                android:padding="@dimen/bulb_padd" />
+
+            <TextView
+                android:text="Window"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView4"
+                android:layout_weight="1"
+                android:textColor="@color/ltgray"
+                android:gravity="center"
+                android:textSize="24sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:paddingBottom="@dimen/somePadding"
+        android:paddingTop="@dimen/somePadding">
 
         <Button
             android:text="@string/allOn"
@@ -72,7 +125,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/temp"
         android:textColor="@color/ltgray"
-        android:text="dsdd"
+        android:text="19.5"
         android:gravity="center"
-        android:layout_marginTop="@dimen/fab_margin" />
+        android:layout_marginTop="@dimen/fab_margin"
+        android:textSize="66sp" />
 </LinearLayout>

@@ -8,7 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -17,6 +19,8 @@ import niyo.nfc.com.nfcori.db.HomeTableColumns;
 
 public class NotificationReceiver extends BroadcastReceiver {
     public static final String LOG_TAG = NotificationReceiver.class.getSimpleName();
+    public static final String VISIBILITY_MODE_EXTRA = "visibility_mode";
+
     public NotificationReceiver() {
     }
 
@@ -24,39 +28,57 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(LOG_TAG, "received notif intent");
 
-        ContentResolver cr = context.getContentResolver();
-        Cursor cursor = cr.query(HarelHome.HOME_STATE_URI, HarelHome.HOME_STATE_PROJECTION, null, null, null);
-        assert cursor != null;
+//        String visibilityMode = intent.getStringExtra(VISIBILITY_MODE_EXTRA);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean isShown = sharedPreferences.getBoolean("notifications_new_message", false);
 
-        if(cursor.moveToFirst() ){
-            int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
-            String tallLampStateStr = cursor.getString(colTallStateIndex);
-            Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
-
-            int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
-            String sofaLampStateStr = cursor.getString(colSofaStateIndex);
-            Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
-
-            int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
-            String windowLampStateStr = cursor.getString(colWindowStateIndex);
-            Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
-
-            int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
-            String oriState = cursor.getString(oriPresIndex);
-
-            Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
-                    " sofaLampState: "+sofaLampStateStr+
-                    " windowLampState: "+windowLampStateStr);
-            Log.d(LOG_TAG, "ori is "+oriState);
-            setupNotification(context, tallLampState, sofaLampState, windowLampState);
+//        if (visibilityMode != null && visibilityMode.equals("hide")) {
+        if (!isShown) {
+            hideNotification(context);
         }
         else {
-            Log.e(LOG_TAG, "Error no cursor!");
+            ContentResolver cr = context.getContentResolver();
+            Cursor cursor = cr.query(HarelHome.HOME_STATE_URI, HarelHome.HOME_STATE_PROJECTION, null, null, null);
+            assert cursor != null;
+
+            if(cursor.moveToFirst() ){
+                int colTallStateIndex = cursor.getColumnIndex(HomeTableColumns.TALL_LAMP_STATE);
+                String tallLampStateStr = cursor.getString(colTallStateIndex);
+                Boolean tallLampState = Boolean.valueOf(tallLampStateStr);
+
+                int colSofaStateIndex = cursor.getColumnIndex(HomeTableColumns.SOFA_LAMP_STATE);
+                String sofaLampStateStr = cursor.getString(colSofaStateIndex);
+                Boolean sofaLampState = Boolean.valueOf(sofaLampStateStr);
+
+                int colWindowStateIndex = cursor.getColumnIndex(HomeTableColumns.WINDOW_LAMP_STATE);
+                String windowLampStateStr = cursor.getString(colWindowStateIndex);
+                Boolean windowLampState = Boolean.valueOf(windowLampStateStr);
+
+                int oriPresIndex = cursor.getColumnIndex(HomeTableColumns.ORI_PRESENCE);
+                String oriState = cursor.getString(oriPresIndex);
+
+                Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
+                        " sofaLampState: "+sofaLampStateStr+
+                        " windowLampState: "+windowLampStateStr);
+                Log.d(LOG_TAG, "ori is "+oriState);
+                setupNotification(context, tallLampState, sofaLampState, windowLampState);
+            }
+            else {
+                Log.e(LOG_TAG, "Error no cursor!");
+            }
+
+            cursor.close();
         }
 
-        cursor.close();
 
 
+
+    }
+
+    private void hideNotification(Context context) {
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
     }
 
     private void setupNotification(Context context,
