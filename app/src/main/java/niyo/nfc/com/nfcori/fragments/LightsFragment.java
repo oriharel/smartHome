@@ -168,7 +168,7 @@ public class LightsFragment extends Fragment {
             TextView tempView = (TextView)view.findViewById(R.id.temp);
             try {
                 Double tempDbl = Double.valueOf(temp);
-                String formattedTemp = new DecimalFormat("#.#").format(tempDbl) + " \u2103";
+                String formattedTemp = new DecimalFormat("#.#").format(tempDbl) + "\u00B0";
                 tempView.setText(formattedTemp);
             }
             catch (Exception exc) {

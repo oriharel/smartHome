@@ -43,6 +43,6 @@ public class HomeDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        Log.d(LOG_TAG, "onUpdate...");
     }
 }

@@ -86,7 +86,7 @@ public class HomeStateFetchService extends Service {
                 Log.d(LOG_TAG, "persons: "+persons);
             }
 
-            if (state.has("tempDatat")) {
+            if (state.has("tempData")) {
                 tempData = state.getJSONObject("tempData");
                 Log.d(LOG_TAG, "tempData: "+tempData);
             }

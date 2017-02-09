@@ -44,6 +44,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,6 +115,7 @@ public class Main2Activity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,6 +132,7 @@ public class Main2Activity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -482,6 +485,15 @@ public class Main2Activity extends AppCompatActivity
                     " sofaLampState: "+sofaLampStateStr+
                     " windowLampState: "+windowLampStateStr);
             Log.d(LOG_TAG, "ori is "+oriState);
+            NavigationView navView = (NavigationView)findViewById(R.id.nav_view);
+            View navHeader = navView.getHeaderView(0);
+            TextView greeting = (TextView)navHeader.findViewById(R.id.greetingText);
+            if (oriState) {
+                greeting.setText("Welcome Home Ori!");
+            }
+            else {
+                greeting.setText("We miss you Ori!");
+            }
         }
 
 
@@ -547,17 +559,12 @@ public class Main2Activity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_lights) {
+            mViewPager.setCurrentItem(0);
+        } else if (id == R.id.nav_presence) {
+            mViewPager.setCurrentItem(1);
+        } else if (id == R.id.nav_cameras) {
+            mViewPager.setCurrentItem(2);
 
         }
 

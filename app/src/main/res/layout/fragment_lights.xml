@@ -125,7 +125,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/temp"
         android:textColor="@color/ltgray"
-        android:text="19.5"
         android:gravity="center"
         android:layout_marginTop="@dimen/fab_margin"
         android:textSize="66sp" />
