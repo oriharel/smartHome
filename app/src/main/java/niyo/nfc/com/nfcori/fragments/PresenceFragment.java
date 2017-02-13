@@ -54,6 +54,7 @@ public class PresenceFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private Integer mParam1;
+    public static final String NAME = "Presence";
 
     private OnFragmentInteractionListener mListener;
 

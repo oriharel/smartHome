@@ -91,22 +91,22 @@ public class HarelHomeProvider extends ContentProvider {
         int count;
 
         // Does the delete based on the incoming URI pattern.
-        switch (sUriMatcher.match(uri)) {
+//        switch (sUriMatcher.match(uri)) {
 
             // If the incoming pattern matches the general pattern for friends, does a delete
             // based on the incoming "where" columns and arguments.
-            case HOME_STATE:
+//            case HOME_STATE:
                 count = db.delete(
                         HomeDbHelper.HOME_TABLE,  // The database table name
                         selection,                     // The incoming where clause column names
                         selectionArgs                  // The incoming where clause values
                 );
-                break;
+//                break;
 
             // If the incoming pattern is invalid, throws an exception.
-            default:
-                throw new IllegalArgumentException("Unknown URI " + uri);
-        }
+//            default:
+//                throw new IllegalArgumentException("Unknown URI " + uri);
+//        }
 
         /*Gets a handle to the content resolver object for the current context, and notifies it
          * that the incoming URI changed. The object passes this along to the resolver framework,
@@ -161,16 +161,16 @@ public class HarelHomeProvider extends ContentProvider {
 
         qb.setTables(HomeDbHelper.HOME_TABLE);
 
-        switch (sUriMatcher.match(uri)) {
+//        switch (sUriMatcher.match(uri)) {
 
-            case HOME_STATE:
+//            case HOME_STATE:
                 qb.setProjectionMap(sHomeStateProjectionMap);
-                break;
+//                break;
 
-            default:
+//            default:
                 // If the URI doesn't match any of the known patterns, throw an exception.
-                throw new IllegalArgumentException("Unknown URI " + uri);
-        }
+//                throw new IllegalArgumentException("Unknown URI " + uri);
+//        }
 
         Log.d(LOG_TAG, "going to query with selection "+selection);
         Log.d(LOG_TAG, "projection is "+ AndroidUtil.getArrayAsString(projection));

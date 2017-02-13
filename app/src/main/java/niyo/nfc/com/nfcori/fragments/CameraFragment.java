@@ -42,6 +42,7 @@ public class CameraFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private Integer mParam1;
+    public static final String NAME = "Cameras";
 
     private VideoView mVideoView;
     private MediaController mController;

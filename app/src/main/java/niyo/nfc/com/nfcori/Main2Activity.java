@@ -35,6 +35,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
@@ -107,6 +108,8 @@ public class Main2Activity extends AppCompatActivity
     private List<PresenceStateListener> mPresenceListeners;
     private List<CameraStateListener> mCameraListeners;
 
+    private boolean mTwoPane;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,35 +117,48 @@ public class Main2Activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.INVISIBLE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(0).setChecked(true);
+        if (findViewById(R.id.leftPane) != null) {
+            // The detail container view will be present only in the
+            // large-screen layouts (res/values-w900dp).
+            // If this view is present, then the
+            // activity should be in two-pane mode.
+            mTwoPane = true;
+        }
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        if (mTwoPane) {
+            setUpRecyclerView();
+        }
+        else {
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setVisibility(View.INVISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.vpcontainer);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open,
+                    R.string.navigation_drawer_close);
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
 
-        PagerTabStrip strip = (PagerTabStrip)findViewById(R.id.vpstrip);
-//        strip.setTextSpacing(40);
-//        strip.setPadding(40, 40, 40, 40);
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+            navigationView.getMenu().getItem(0).setChecked(true);
+
+            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+            // Set up the ViewPager with the sections adapter.
+            mViewPager = (ViewPager) findViewById(R.id.vpcontainer);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+        }
+
         mLampListeners = new ArrayList<>();
         mPresenceListeners = new ArrayList<>();
         mCameraListeners = new ArrayList<>();
@@ -168,6 +184,15 @@ public class Main2Activity extends AppCompatActivity
         };
         registerForChanges();
         refreshData();
+    }
+
+    private void setUpRecyclerView() {
+        List<ListPaneItem> items = new ArrayList<>();
+        items.add(new ListPaneItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.lights), LightsFragment.NAME));
+        items.add(new ListPaneItem(R.drawable.ic_group_black_24dp, getString(R.string.presence), PresenceFragment.NAME));
+        items.add(new ListPaneItem(R.drawable.ic_visibility_black_24dp, getString(R.string.cameras), CameraFragment.NAME));
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.leftPane);
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(items));
     }
 
     @Override
@@ -353,10 +378,6 @@ public class Main2Activity extends AppCompatActivity
             public void success(Object data) {
 
                 Log.d(LOG_TAG, "all sockets are " + state + "?");
-//                Intent serviceIntent = new Intent(context, HomeStateFetchService.class);
-//                serviceIntent.putExtra(HomeStateFetchService.EVENT_NAMT_EXTRA,
-//                        HomeStateFetchService.STATE_EVENT_NAME);
-//                context.startService(serviceIntent);
                 String dataStr = (String)data;
                 try {
                     HomeStateFetchService.processState(context, new JSONObject(dataStr));
@@ -375,35 +396,6 @@ public class Main2Activity extends AppCompatActivity
         String url = Utils.getHomeURL() + "/all/sockets/" + state;
         task.execute(url, "true");
 
-    }
-
-    private void runSyncManually() {
-        Log.d(LOG_TAG, "runSyncManually started");
-        Bundle settingsBundle = new Bundle();
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        /*
-         * Request the sync for the default account, authority, and
-         * manual sync settings
-         */
-
-        AccountManager accountManager =
-                (AccountManager) getSystemService(
-                        ACCOUNT_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
-        ContentResolver.requestSync(accounts[0], AUTHORITY, settingsBundle);
     }
 
     @Override
@@ -480,34 +472,30 @@ public class Main2Activity extends AppCompatActivity
                 listener.onChange(homeImage64);
             }
 
-
             Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
                     " sofaLampState: "+sofaLampStateStr+
                     " windowLampState: "+windowLampStateStr);
             Log.d(LOG_TAG, "ori is "+oriState);
-            NavigationView navView = (NavigationView)findViewById(R.id.nav_view);
-            View navHeader = navView.getHeaderView(0);
-            TextView greeting = (TextView)navHeader.findViewById(R.id.greetingText);
-            if (oriState) {
-                greeting.setText("Welcome Home Ori!");
+
+            if (!mTwoPane) {
+                NavigationView navView = (NavigationView)findViewById(R.id.nav_view);
+                View navHeader = navView.getHeaderView(0);
+                TextView greeting = (TextView)navHeader.findViewById(R.id.greetingText);
+                if (oriState) {
+                    greeting.setText("Welcome Home Ori!");
+                }
+                else {
+                    greeting.setText("We miss you Ori!");
+                }
             }
-            else {
-                greeting.setText("We miss you Ori!");
-            }
+
         }
 
 
     }
 
-    private void updateBulbImage(ImageView bulb, Boolean bulbState) {
-        bulb.setImageResource(bulbState ? R.drawable.on_bulb : R.drawable.off_bulb);
-        bulb.setTag(bulbState ? "on" : "off");
-    }
-
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
+    public void onLoaderReset(Loader<Cursor> loader) {}
 
     @Override
     public void onBackPressed() {
@@ -536,9 +524,6 @@ public class Main2Activity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -633,6 +618,89 @@ public class Main2Activity extends AppCompatActivity
                     return "Cameras";
             }
             return null;
+        }
+    }
+
+    public class SimpleItemRecyclerViewAdapter extends
+            RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+
+        List<ListPaneItem> mItems;
+
+        public SimpleItemRecyclerViewAdapter(List<ListPaneItem> items) {
+            mItems = items;
+        }
+
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.pane_item_layout, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, final int position) {
+            holder.mItem = mItems.get(position);
+            holder.mImageView.setImageResource(mItems.get(position).mImageResource);
+            holder.mTextView.setText(mItems.get(position).mText);
+
+            holder.mLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ListPaneItem item = mItems.get(position);
+                    Fragment fragment;
+                    switch (item.mId) {
+                        case(LightsFragment.NAME):
+                            fragment = LightsFragment.newInstance(0);
+                            break;
+                        case(PresenceFragment.NAME):
+                            fragment = PresenceFragment.newInstance(1);
+                            break;
+                        case(CameraFragment.NAME):
+                            fragment = CameraFragment.newInstance(2);
+                            break;
+                        default:
+                            fragment = LightsFragment.newInstance(0);
+                    }
+
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.item_detail_container, fragment)
+                            .commit();
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mItems.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            public final View mLayout;
+            public final ImageView mImageView;
+            public final TextView mTextView;
+            public ListPaneItem mItem;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                mLayout = itemView;
+                mImageView = (ImageView)itemView.findViewById(R.id.paneItemImage);
+                mTextView = (TextView)itemView.findViewById(R.id.paneItemText);
+            }
+        }
+
+    }
+
+    public class ListPaneItem {
+        int mImageResource;
+        String mText;
+        String mId;
+
+        public ListPaneItem(int imageResource, String text, String id) {
+            mImageResource = imageResource;
+            mText = text;
+            mId = id;
         }
     }
 

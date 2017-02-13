@@ -34,7 +34,8 @@ public class LightsFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private int mParam1;
+    private Integer mParam1;
+    public static final String NAME = "Lights";
 
     private OnFragmentInteractionListener mListener;
 
