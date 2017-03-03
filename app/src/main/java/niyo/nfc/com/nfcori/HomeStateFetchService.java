@@ -171,11 +171,14 @@ public class HomeStateFetchService extends Service {
     private static JSONObject getLampObject(JSONArray sockets, String macAddess) throws JSONException {
         JSONObject result = new JSONObject();
 
-        for (int i = 0; i < sockets.length(); i++) {
-            JSONObject lampInfo = sockets.getJSONObject(i);
-            if (lampInfo.getString("macAddress").equals(macAddess))
-                result = lampInfo;
+        if (sockets != null) {
+            for (int i = 0; i < sockets.length(); i++) {
+                JSONObject lampInfo = sockets.getJSONObject(i);
+                if (lampInfo.getString("macAddress").equals(macAddess))
+                    result = lampInfo;
+            }
         }
+
 
         return result;
 

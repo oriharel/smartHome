@@ -11,5 +11,6 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="somePadding">30dp</dimen>
     <dimen name="items_width">200dip</dimen>
+    <dimen name="bulbWidth">122dip</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
 </resources>

@@ -12,113 +12,132 @@
     android:background="@color/dkgray"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".Main2Activity">
+
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/bulbLayout"
-        >
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/off_bulb"
-                android:id="@+id/tallBulb"
-                android:layout_weight="1"
-                android:padding="@dimen/bulb_padd" />
-
-            <TextView
-                android:text="Tall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView2"
-                android:layout_weight="1"
-                android:textColor="@color/ltgray"
-                android:gravity="center"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/off_bulb"
-                android:id="@+id/sofaBulb"
-                android:layout_weight="1"
-                android:padding="@dimen/bulb_padd" />
-
-            <TextView
-                android:text="Door"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView3"
-                android:layout_weight="1"
-                android:textColor="@color/ltgray"
-                android:gravity="center"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/off_bulb"
-                android:id="@+id/windowBulb"
-                android:layout_weight="1"
-                android:padding="@dimen/bulb_padd" />
-
-            <TextView
-                android:text="Window"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView4"
-                android:layout_weight="1"
-                android:textColor="@color/ltgray"
-                android:gravity="center"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/somePadding"
-        android:paddingTop="@dimen/somePadding">
+        android:layout_marginTop="50dip"
+        android:orientation="horizontal">
 
-        <Button
-            android:text="@string/allOn"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toggleButtonHeight"
-            android:id="@+id/allOn"
-            android:layout_gravity="center"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <Button
-            android:text="@string/allOff"
+            <ImageView
+                android:id="@+id/tallBulb"
+                android:layout_width="@dimen/bulbWidth"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:padding="@dimen/bulb_padd"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/off_bulb" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Tall"
+                android:textColor="@color/ltgray"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dip"
-            android:id="@+id/allOff"
-            android:layout_gravity="center"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/sofaBulb"
+                android:layout_width="@dimen/bulbWidth"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:padding="@dimen/bulb_padd"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/off_bulb" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Door"
+                android:textColor="@color/ltgray"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/windowBulb"
+                android:layout_width="@dimen/bulbWidth"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:padding="@dimen/bulb_padd"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/off_bulb" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Window"
+                android:textColor="@color/ltgray"
+                android:textSize="24sp" />
+        </LinearLayout>
+
     </LinearLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="300dip"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <ImageButton
+            android:id="@+id/allOn"
+            android:layout_width="80dip"
+            android:layout_height="80dip"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/round_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_power_settings_new_white_48dp" />
+
+        <ImageButton
+            android:id="@+id/allOff"
+            android:layout_width="80dip"
+            android:layout_height="80dip"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/round_red"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_power_settings_new_white_48dp" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:layout_width="match_parent"
@@ -127,5 +146,6 @@
         android:textColor="@color/ltgray"
         android:gravity="center"
         android:layout_marginTop="@dimen/fab_margin"
-        android:textSize="66sp" />
+        android:textSize="66sp"
+        android:text="TestText" />
 </LinearLayout>

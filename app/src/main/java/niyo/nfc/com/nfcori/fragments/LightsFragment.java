@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -71,7 +72,7 @@ public class LightsFragment extends Fragment {
 
         final Main2Activity act = (Main2Activity)getActivity();
 
-        Button onButton = (Button) view.findViewById(R.id.allOn);
+        ImageButton onButton = (ImageButton) view.findViewById(R.id.allOn);
         onButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +80,7 @@ public class LightsFragment extends Fragment {
             }
         });
 
-        Button offButton = (Button) view.findViewById(R.id.allOff);
+        ImageButton offButton = (ImageButton) view.findViewById(R.id.allOff);
         offButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

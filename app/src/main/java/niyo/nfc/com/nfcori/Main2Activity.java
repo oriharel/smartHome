@@ -85,7 +85,6 @@ public class Main2Activity extends AppCompatActivity
                     SECONDS_PER_MINUTE;
     private ContentObserver mObserver;
     Handler mHandler = new Handler();
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     public Boolean tallLampState;
     public Boolean sofaLampState;
@@ -116,8 +115,6 @@ public class Main2Activity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
 
         if (findViewById(R.id.leftPane) != null) {
             // The detail container view will be present only in the
@@ -152,7 +149,7 @@ public class Main2Activity extends AppCompatActivity
             navigationView.setNavigationItemSelectedListener(this);
             navigationView.getMenu().getItem(0).setChecked(true);
 
-            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
             // Set up the ViewPager with the sections adapter.
             mViewPager = (ViewPager) findViewById(R.id.vpcontainer);
@@ -188,11 +185,15 @@ public class Main2Activity extends AppCompatActivity
 
     private void setUpRecyclerView() {
         List<ListPaneItem> items = new ArrayList<>();
-        items.add(new ListPaneItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.lights), LightsFragment.NAME));
-        items.add(new ListPaneItem(R.drawable.ic_group_black_24dp, getString(R.string.presence), PresenceFragment.NAME));
-        items.add(new ListPaneItem(R.drawable.ic_visibility_black_24dp, getString(R.string.cameras), CameraFragment.NAME));
+        items.add(new ListPaneItem(R.drawable.ic_lightbulb_outline_white_48dp, getString(R.string.lights), LightsFragment.NAME));
+        items.add(new ListPaneItem(R.drawable.ic_group_white_48dp, getString(R.string.presence), PresenceFragment.NAME));
+        items.add(new ListPaneItem(R.drawable.ic_visibility_white_48dp, getString(R.string.cameras), CameraFragment.NAME));
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.leftPane);
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(items));
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.item_detail_container, LightsFragment.newInstance(0))
+                .commit();
     }
 
     @Override
