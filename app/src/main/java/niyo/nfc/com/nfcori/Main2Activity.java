@@ -51,6 +51,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -489,6 +490,12 @@ public class Main2Activity extends AppCompatActivity
                     greeting.setText("We miss you Ori!");
                 }
             }
+            else {
+                TextView tempLarge = (TextView)findViewById(R.id.tempLarge);
+                Double tempDbl = Double.valueOf(temp);
+                String formattedTemp = new DecimalFormat("#.#").format(tempDbl) + "\u00B0";
+                tempLarge.setText(formattedTemp);
+            }
 
         }
 
@@ -676,14 +683,14 @@ public class Main2Activity extends AppCompatActivity
             return mItems.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
 
-            public final View mLayout;
-            public final ImageView mImageView;
-            public final TextView mTextView;
-            public ListPaneItem mItem;
+            final View mLayout;
+            final ImageView mImageView;
+            final TextView mTextView;
+            ListPaneItem mItem;
 
-            public ViewHolder(View itemView) {
+            ViewHolder(View itemView) {
                 super(itemView);
                 mLayout = itemView;
                 mImageView = (ImageView)itemView.findViewById(R.id.paneItemImage);
@@ -693,12 +700,12 @@ public class Main2Activity extends AppCompatActivity
 
     }
 
-    public class ListPaneItem {
+    private class ListPaneItem {
         int mImageResource;
         String mText;
         String mId;
 
-        public ListPaneItem(int imageResource, String text, String id) {
+        ListPaneItem(int imageResource, String text, String id) {
             mImageResource = imageResource;
             mText = text;
             mId = id;

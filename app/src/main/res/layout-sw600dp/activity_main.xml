@@ -33,16 +33,37 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/leftPane"
-            android:layout_width="200dip"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="50dip"
-            app:layoutManager="LinearLayoutManager"
-            tools:context=".Main2Activity"
-            tools:listItem="@layout/pane_item_layout" />
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/leftPane"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="15dip"
+                app:layoutManager="LinearLayoutManager"
+                tools:context=".Main2Activity"
+                tools:listItem="@layout/pane_item_layout" />
+
+            <TextView
+                android:id="@+id/tempLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="24"
+                android:textSize="40sp" />
+
+            <TextClock
+                android:id="@+id/textClock"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="25sp" />
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/item_detail_container"
