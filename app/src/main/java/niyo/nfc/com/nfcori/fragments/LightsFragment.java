@@ -177,6 +177,12 @@ public class LightsFragment extends Fragment {
                 Log.e(LOG_TAG, "cannot parse double "+temp);
             }
 
+            Main2Activity act = (Main2Activity)getActivity();
+
+            if (act.mTwoPane) {
+                tempView.setVisibility(View.GONE);
+            }
+
         }
 
     }

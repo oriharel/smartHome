@@ -1,13 +1,21 @@
 package niyo.nfc.com.nfcori;
 
 import android.os.AsyncTask;
+import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 
 public class GenericHttpRequestTask extends AsyncTask<String, Void, Integer> {
 	
@@ -34,6 +42,23 @@ public class GenericHttpRequestTask extends AsyncTask<String, Void, Integer> {
             con.setRequestProperty("Cookie", cookie);
             if (params.length > 1) {
                 con.setDoOutput(Boolean.valueOf(params[1]));
+                con.setRequestMethod( "POST" );
+
+                if (params.length > 2) {
+                    con.setRequestProperty( "Content-Type", "application/json");
+                    String bodyParams = params[2];
+                    OutputStream os = con.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(
+                            new OutputStreamWriter(os, "UTF-8"));
+
+                    Log.d(LOG_TAG, "sending post request with: "+bodyParams);
+                    writer.write(bodyParams);
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    con.connect();
+                }
             }
             int sc = con.getResponseCode();
             Log.d(LOG_TAG, url.getHost()+" returned "+sc);

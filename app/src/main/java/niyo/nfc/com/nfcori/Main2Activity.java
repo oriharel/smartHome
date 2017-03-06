@@ -47,6 +47,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -108,7 +110,7 @@ public class Main2Activity extends AppCompatActivity
     private List<PresenceStateListener> mPresenceListeners;
     private List<CameraStateListener> mCameraListeners;
 
-    private boolean mTwoPane;
+    public boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +168,7 @@ public class Main2Activity extends AppCompatActivity
         sendBroadcast(notifIntent);
         CreateSyncAccount();
         setUpSync();
+        sendRegistrationKey();
 
         final Main2Activity context = this;
         mObserver = new ContentObserver(mHandler) {
@@ -182,6 +185,11 @@ public class Main2Activity extends AppCompatActivity
         };
         registerForChanges();
         refreshData();
+    }
+
+    private void sendRegistrationKey() {
+        Log.d(LOG_TAG, "sendRegistrationKey with "+FirebaseInstanceId.getInstance().getToken());
+        HomeFirebaseService.sendRegistrationToServer(FirebaseInstanceId.getInstance().getToken());
     }
 
     private void setUpRecyclerView() {

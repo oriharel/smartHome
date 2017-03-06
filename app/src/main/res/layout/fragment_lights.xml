@@ -111,7 +111,8 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="300dip"
         android:layout_height="match_parent"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_weight="1">
 
         <ImageButton
             android:id="@+id/allOn"
@@ -140,12 +141,12 @@
     </android.support.constraint.ConstraintLayout>
 
     <TextView
+        android:id="@+id/temp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/temp"
-        android:textColor="@color/ltgray"
-        android:gravity="center"
         android:layout_marginTop="@dimen/fab_margin"
-        android:textSize="66sp"
-        android:text="TestText" />
+        android:gravity="center"
+        android:text="TestText"
+        android:textColor="@color/ltgray"
+        android:textSize="66sp" />
 </LinearLayout>
