@@ -99,5 +99,7 @@
     <string name="presence">Presence</string>
     <string name="cameras">Cameras</string>
     <string name="harel_family">Harel Family</string>
+    <string name="action_cam_activate">Activate Cam</string>
+    <string name="action_cam_deactivate">Deactivate Cam</string>
 
 </resources>

@@ -27,7 +27,7 @@ public class LightsBroadcastReceiver extends BroadcastReceiver {
     public static final String ALL_STATE_EXTRA = "allExtra";
 
     @Override
-    public void onReceive(final Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
 
         final ServiceCaller caller = new ServiceCaller() {
             @Override
@@ -43,7 +43,7 @@ public class LightsBroadcastReceiver extends BroadcastReceiver {
 
                 String dataStr = (String)data;
                 try {
-                    HomeStateFetchService.processState(context, new JSONObject(dataStr));
+                    HomeStateFetchService.processState(context, new JSONObject(dataStr), intent);
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "unable to parse "+dataStr);
                 }

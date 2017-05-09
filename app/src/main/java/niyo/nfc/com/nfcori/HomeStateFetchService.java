@@ -1,11 +1,18 @@
 package niyo.nfc.com.nfcori;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.util.Base64;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +28,10 @@ public class HomeStateFetchService extends Service {
     public static final String EVENT_NAMT_EXTRA = "event_name";
     public static final String STATE_EVENT_NAME = "state";
     public static final String LAST_STATE_EVENT_NAME = "lastStateForClients";
+    public static final String TRIGGER_EXTRA = "trigger_extra";
+    public static final String PUSH = "push";
+    public static final String PUSH_TITLE_EXTRA = "push_title";
+    public static final String PUSH_BODY_EXTRA = "push_body";
 
     private static HashMap<String, String> sLampNameToMac;
     static {
@@ -34,7 +45,7 @@ public class HomeStateFetchService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
 
         final Context context = this;
         final ServiceCaller caller = new ServiceCaller() {
@@ -45,7 +56,7 @@ public class HomeStateFetchService extends Service {
                 String dataStr = (String)data;
 
                 try {
-                    processState(context, new JSONObject(dataStr));
+                    processState(context, new JSONObject(dataStr), intent);
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "error parsing state: "+data);
                 }
@@ -68,7 +79,7 @@ public class HomeStateFetchService extends Service {
         return START_STICKY;
     }
 
-    public static void processState(Context context, JSONObject state) {
+    public static void processState(Context context, JSONObject state, Intent intent) {
         JSONArray sockets = null;
         JSONObject persons = null;
         JSONObject tempData = null;
@@ -109,6 +120,17 @@ public class HomeStateFetchService extends Service {
         Log.d(LOG_TAG, "stopping service now...");
         Intent notifIntent = new Intent("com.niyo.updateNotification");
         context.sendBroadcast(notifIntent);
+
+        if (intent != null && intent.getStringExtra(TRIGGER_EXTRA) != null && intent.getStringExtra(TRIGGER_EXTRA).equals(PUSH)) {
+            Log.d(LOG_TAG, "home fetch service started from a push. showing notification");
+            sendNotification(intent.getStringExtra(PUSH_TITLE_EXTRA),
+                    intent.getStringExtra(PUSH_BODY_EXTRA),
+                    context,
+                    camImage);
+        }
+        else {
+            Log.d(LOG_TAG, "service was not started from push");
+        }
     }
 
     public static void insertStateToDb(Context context, JSONArray sockets,
@@ -189,5 +211,33 @@ public class HomeStateFetchService extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private static void sendNotification(String title, String body, Context context, String camImage) {
+        Intent intent = new Intent(context, Main2Activity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        byte[] camHomeImage64 = camImage.getBytes();
+        byte[] decodedString = Base64.decode(camHomeImage64, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+                .setLargeIcon(decodedByte)/*Notification icon image*/
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setStyle(new NotificationCompat.BigPictureStyle()
+                        .bigPicture(decodedByte))/*Notification with Image*/
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(76 /* ID of notification */, notificationBuilder.build());
     }
 }

@@ -12,4 +12,14 @@
         android:orderInCategory="100"
         android:title="@string/action_refresh"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/cam_activate"
+        android:orderInCategory="100"
+        android:title="@string/action_cam_activate"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/cam_deactivate"
+        android:orderInCategory="100"
+        android:title="@string/action_cam_deactivate"
+        app:showAsAction="never" />
 </menu>

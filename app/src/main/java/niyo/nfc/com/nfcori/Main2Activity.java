@@ -356,7 +356,7 @@ public class Main2Activity extends AppCompatActivity
                         .show();
                 String dataStr = (String)data;
                 try {
-                    HomeStateFetchService.processState(context, new JSONObject(dataStr));
+                    HomeStateFetchService.processState(context, new JSONObject(dataStr), getIntent());
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "unable to parse "+dataStr);
                 }
@@ -390,7 +390,7 @@ public class Main2Activity extends AppCompatActivity
                 Log.d(LOG_TAG, "all sockets are " + state + "?");
                 String dataStr = (String)data;
                 try {
-                    HomeStateFetchService.processState(context, new JSONObject(dataStr));
+                    HomeStateFetchService.processState(context, new JSONObject(dataStr), getIntent());
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "unable to parse "+dataStr);
                 }
@@ -551,7 +551,40 @@ public class Main2Activity extends AppCompatActivity
             refreshData();
         }
 
+        if (id == R.id.cam_activate) {
+            cameraAction(true);
+        }
+
+        if (id == R.id.cam_deactivate) {
+            cameraAction(false);
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void cameraAction(boolean active) {
+        final String action = active ? "activate" : "deActivate";
+        final View parentView = findViewById(R.id.drawer_layout);
+
+        ServiceCaller caller = new ServiceCaller() {
+            @Override
+            public void success(Object data) {
+                Snackbar.make(parentView, "Camera "+action+"d", Snackbar.LENGTH_LONG)
+                        .show();
+            }
+
+            @Override
+            public void failure(Object data, String description) {
+                Snackbar.make(parentView, "Camera can not "+action, Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        };
+
+
+
+        GenericHttpRequestTask task = new GenericHttpRequestTask(caller);
+        String camUrl = Utils.getHomeURL()+"/"+action+"/cam?uuid=f589cad6-49bf-4d1b-9091-4ba9ef1d466b";
+        task.execute(camUrl, "true");
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
