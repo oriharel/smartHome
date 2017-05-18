@@ -6,11 +6,13 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Base64;
 import android.util.Log;
@@ -224,6 +226,13 @@ public class HomeStateFetchService extends Service {
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String userRingtoneStr = prefs.getString(context.getResources().
+                getString(R.string.notifRingtone), null);
+        if (userRingtoneStr != null) {
+            defaultSoundUri = Uri.parse(userRingtoneStr);
+        }
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setLargeIcon(decodedByte)/*Notification icon image*/
                 .setSmallIcon(R.drawable.ic_launcher)

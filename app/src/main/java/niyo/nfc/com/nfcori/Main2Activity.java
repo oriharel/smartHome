@@ -235,6 +235,7 @@ public class Main2Activity extends AppCompatActivity
 
     private void setNfcListener() {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            Log.d(LOG_TAG, "App launched form NFC");
             Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage[] msgs;
             if (rawMsgs != null) {
@@ -254,6 +255,9 @@ public class Main2Activity extends AppCompatActivity
                     }
                 }
             }
+        }
+        else {
+            Log.d(LOG_TAG, "no NFC detected");
         }
     }
 
