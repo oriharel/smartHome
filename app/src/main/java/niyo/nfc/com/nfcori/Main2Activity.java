@@ -64,6 +64,7 @@ import niyo.nfc.com.nfcori.fragments.CameraFragment;
 import niyo.nfc.com.nfcori.fragments.LightsFragment;
 import niyo.nfc.com.nfcori.fragments.OnFragmentInteractionListener;
 import niyo.nfc.com.nfcori.fragments.PresenceFragment;
+import niyo.nfc.com.nfcori.fragments.SensorsFragment;
 
 import static niyo.nfc.com.nfcori.HarelHome.AUTHORITY;
 
@@ -197,6 +198,7 @@ public class Main2Activity extends AppCompatActivity
         items.add(new ListPaneItem(R.drawable.ic_lightbulb_outline_white_48dp, getString(R.string.lights), LightsFragment.NAME));
         items.add(new ListPaneItem(R.drawable.ic_group_white_48dp, getString(R.string.presence), PresenceFragment.NAME));
         items.add(new ListPaneItem(R.drawable.ic_visibility_white_48dp, getString(R.string.cameras), CameraFragment.NAME));
+        items.add(new ListPaneItem(R.drawable.ic_visibility_white_48dp, getString(R.string.sensors), SensorsFragment.NAME));
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.leftPane);
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(items));
 
@@ -649,6 +651,8 @@ public class Main2Activity extends AppCompatActivity
                     return PresenceFragment.newInstance(position + 2);
                 case 2:
                     return CameraFragment.newInstance(position + 3);
+                case 3:
+                    return SensorsFragment.newInstance(position + 4);
                 default:
                     return LightsFragment.newInstance(position+1);
             }
@@ -657,7 +661,7 @@ public class Main2Activity extends AppCompatActivity
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
 
         @Override
@@ -669,6 +673,8 @@ public class Main2Activity extends AppCompatActivity
                     return "Presence";
                 case 2:
                     return "Cameras";
+                case 3:
+                    return "Sensors";
             }
             return null;
         }
@@ -711,6 +717,9 @@ public class Main2Activity extends AppCompatActivity
                             break;
                         case(CameraFragment.NAME):
                             fragment = CameraFragment.newInstance(2);
+                            break;
+                        case(SensorsFragment.NAME):
+                            fragment = SensorsFragment.newInstance(3);
                             break;
                         default:
                             fragment = LightsFragment.newInstance(0);

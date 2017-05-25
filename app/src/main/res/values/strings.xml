@@ -8,7 +8,7 @@
     <string name="nfc_setting">NFC is currently disabled in your settings. You cannot read or write NFC tags.</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_read">ReadActivity</string>
-    <string name="title_activity_main2">Light Switch</string>
+    <string name="title_activity_main2">Home</string>
     <string name="provider_name">Home State</string>
     <string name="toggleHomeText">Toggle All</string>
     <string name="allOn">All On</string>
@@ -101,5 +101,7 @@
     <string name="harel_family">Harel Family</string>
     <string name="action_cam_activate">Activate Cam</string>
     <string name="action_cam_deactivate">Deactivate Cam</string>
+    <string name="notifRingtone">notifications_new_message_ringtone</string>
+    <string name="sensors">Sensors</string>
 
 </resources>

@@ -235,7 +235,7 @@ public class HomeStateFetchService extends Service {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setLargeIcon(decodedByte)/*Notification icon image*/
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.logos_smarthome)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new NotificationCompat.BigPictureStyle()
