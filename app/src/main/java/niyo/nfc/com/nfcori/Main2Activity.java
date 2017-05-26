@@ -647,7 +647,8 @@ public class Main2Activity extends AppCompatActivity
             mViewPager.setCurrentItem(1);
         } else if (id == R.id.nav_cameras) {
             mViewPager.setCurrentItem(2);
-
+        } else if (id == R.id.nav_sensors) {
+            mViewPager.setCurrentItem(3);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
