@@ -28,11 +28,16 @@ public class HomeDbHelper extends SQLiteOpenHelper {
                     + HomeTableColumns.HOME_TEMP + " FLOAT, "
                     + HomeTableColumns.STATE_FETCH_IN_PROGRESS + " BOOLEAN, "
                     + HomeTableColumns.HOME_PIC + " BLOB,"
+                    + HomeTableColumns.DOOR_STATUS + " BOOLEAN,"
+                    + HomeTableColumns.DOOR_STATUS_TIME + " BIGINT,"
+                    + HomeTableColumns.GINA_STATUS + " BOOLEAN,"
+                    + HomeTableColumns.GINA_STATUS_TIME + " BIGINT,"
                     + HomeTableColumns.HOME_CAM_PIC + " BLOB);";
 
     public HomeDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
                         int version) {
         super(context, name, factory, version);
+        Log.d(LOG_TAG, "constructor started");
     }
 
     @Override

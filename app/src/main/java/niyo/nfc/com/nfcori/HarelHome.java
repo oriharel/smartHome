@@ -29,6 +29,10 @@ public class HarelHome {
             HomeTableColumns.YIFAT_LAST_PRESENCE,
             HomeTableColumns.HOME_TEMP,
             HomeTableColumns.HOME_PIC,
-            HomeTableColumns.HOME_CAM_PIC
+            HomeTableColumns.HOME_CAM_PIC,
+            HomeTableColumns.DOOR_STATUS,
+            HomeTableColumns.DOOR_STATUS_TIME,
+            HomeTableColumns.GINA_STATUS,
+            HomeTableColumns.GINA_STATUS_TIME
     };
 }

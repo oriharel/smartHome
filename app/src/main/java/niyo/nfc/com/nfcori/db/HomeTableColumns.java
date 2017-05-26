@@ -19,6 +19,10 @@ public class HomeTableColumns implements BaseColumns {
     public static final String HOME_TEMP = "home_temp";
     public static final String HOME_PIC = "home_pic";
     public static final String HOME_CAM_PIC = "home_cam_pic";
+    public static final String DOOR_STATUS = "door_status";
+    public static final String DOOR_STATUS_TIME = "door_status_time";
+    public static final String GINA_STATUS = "gina_status";
+    public static final String GINA_STATUS_TIME = "gina_status_time";
     public static final String STATE_FETCH_IN_PROGRESS = "state_fetching";
 
     public static final int COLUMN_ID_PATH_INDEX = 1;
@@ -32,4 +36,8 @@ public class HomeTableColumns implements BaseColumns {
     public static final int COLUMN_YIFAT_LAST_PRESENCE_INDEX = 9;
     public static final int COLUMN_HOME_TEMP_INDEX = 10;
     public static final int COLUMN_HOME_PIC_INDEX = 11;
+    public static final int COLUMN_DOOR_STATUS_INDEX = 12;
+    public static final int COLUMN_DOOR_STATUS_TIME_INDEX = 13;
+    public static final int COLUMN_GINA_STATUS_INDEX = 14;
+    public static final int COLUMN_GINA_STATUS_TIME_INDEX = 15;
 }

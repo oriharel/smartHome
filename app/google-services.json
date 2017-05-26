@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "587658041114",
+    "firebase_url": "https://nfcori.firebaseio.com",
+    "project_id": "nfcori",
+    "storage_bucket": "nfcori.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587658041114:android:414bbe6c89a2fa71",
+        "android_client_info": {
+          "package_name": "niyo.nfc.com.nfcori"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587658041114-gokcekbtoftdp3lnn3tll2is91igq3mg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "niyo.nfc.com.nfcori",
+            "certificate_hash": "9dac6fe006be7543f616a6d6877e49397ad7db36"
+          }
+        },
+        {
+          "client_id": "587658041114-qpb49e5emf82luki3ccvb2okqanrcuin.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7oIuOxET4RVkGDdWY7CtgKbBofe7t_7A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587658041114-qpb49e5emf82luki3ccvb2okqanrcuin.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -57,6 +57,10 @@ public class HarelHomeProvider extends ContentProvider {
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_TEMP, HomeTableColumns.HOME_TEMP);
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_PIC, HomeTableColumns.HOME_PIC);
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_CAM_PIC, HomeTableColumns.HOME_CAM_PIC);
+        sHomeStateProjectionMap.put(HomeTableColumns.DOOR_STATUS, HomeTableColumns.DOOR_STATUS);
+        sHomeStateProjectionMap.put(HomeTableColumns.DOOR_STATUS_TIME, HomeTableColumns.DOOR_STATUS_TIME);
+        sHomeStateProjectionMap.put(HomeTableColumns.GINA_STATUS, HomeTableColumns.GINA_STATUS);
+        sHomeStateProjectionMap.put(HomeTableColumns.GINA_STATUS_TIME, HomeTableColumns.GINA_STATUS_TIME);
         sHomeStateProjectionMap.put(HomeTableColumns.STATE_FETCH_IN_PROGRESS, HomeTableColumns.STATE_FETCH_IN_PROGRESS);
 
     }

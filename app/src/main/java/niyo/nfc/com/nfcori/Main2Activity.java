@@ -100,6 +100,12 @@ public class Main2Activity extends AppCompatActivity
     public String oriLastStateTime;
     public String yifatLastStateTime;
 
+    public Boolean doorStatus = false;
+    public Long doorStatusTime = 0L;
+    public Boolean ginaStatus = false;
+    public Long ginaStatusTime = 0L;
+
+
     public String temp;
 
     public String lastUpdateTime;
@@ -110,6 +116,7 @@ public class Main2Activity extends AppCompatActivity
     private List<LampStateListener> mLampListeners;
     private List<PresenceStateListener> mPresenceListeners;
     private List<CameraStateListener> mCameraListeners;
+    private List<SensorsStateListener> mSensorsListeners;
 
     public boolean mTwoPane;
 
@@ -163,6 +170,7 @@ public class Main2Activity extends AppCompatActivity
         mLampListeners = new ArrayList<>();
         mPresenceListeners = new ArrayList<>();
         mCameraListeners = new ArrayList<>();
+        mSensorsListeners = new ArrayList<>();
 
         setNfcListener();
         Intent notifIntent = new Intent(this, NotificationReceiver.class);
@@ -468,10 +476,39 @@ public class Main2Activity extends AppCompatActivity
             int camHomeImageIndex = cursor.getColumnIndex(HomeTableColumns.HOME_CAM_PIC);
             homeCamImage64 = cursor.getBlob(camHomeImageIndex);
 
+            int doorStatusIndex = cursor.getColumnIndex(HomeTableColumns.DOOR_STATUS);
+            if (doorStatusIndex >= 0) {
+                String doorStatusStr = cursor.getString(doorStatusIndex);
+                Log.d(LOG_TAG, "door status is: "+doorStatusStr);
+                doorStatus = doorStatusStr.equals("Closed");
+            }
+
+
+            int doorStatusTimeIndex = cursor.getColumnIndex(HomeTableColumns.DOOR_STATUS_TIME);
+
+            if (doorStatusTimeIndex >= 0) {
+                doorStatusTime = cursor.getLong(doorStatusTimeIndex);
+                Log.d(LOG_TAG, "doorStatusTime: "+doorStatusTime);
+            }
+
+
+            int ginaStatusIndex = cursor.getColumnIndex(HomeTableColumns.GINA_STATUS);
+            if (ginaStatusIndex >= 0) {
+                String ginaStatusStr = cursor.getString(ginaStatusIndex);
+                ginaStatus = ginaStatusStr.equals("Closed");
+            }
+
+
+            int ginaStatusTimeIndex = cursor.getColumnIndex(HomeTableColumns.GINA_STATUS_TIME);
+
+            if (ginaStatusTimeIndex >= 0) {
+                ginaStatusTime = cursor.getLong(ginaStatusTimeIndex);
+            }
+
+
             if (homeCamImage64 != null) {
                 Log.d(LOG_TAG, "received homeCamImage64: "+homeCamImage64.length);
             }
-
 
             for (LampStateListener listener :
                     mLampListeners) {
@@ -486,6 +523,11 @@ public class Main2Activity extends AppCompatActivity
             for (CameraStateListener listener :
                     mCameraListeners) {
                 listener.onChange(homeImage64);
+            }
+
+            for (SensorsStateListener listener :
+                    mSensorsListeners) {
+                listener.onChange(doorStatus, doorStatusTime, ginaStatus, ginaStatusTime);
             }
 
             Log.d(LOG_TAG, "tallLampState is: "+tallLampStateStr+
@@ -631,6 +673,11 @@ public class Main2Activity extends AppCompatActivity
     @Override
     public void registerForCameraChange(CameraStateListener listener) {
         mCameraListeners.add(listener);
+    }
+
+    @Override
+    public void registerForSensorsChange(SensorsStateListener listener) {
+        mSensorsListeners.add(listener);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

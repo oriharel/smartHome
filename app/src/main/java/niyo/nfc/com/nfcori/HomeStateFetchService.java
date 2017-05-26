@@ -43,6 +43,13 @@ public class HomeStateFetchService extends Service {
         sLampNameToMac.put("windowLamp", "accf23934938");
     }
 
+    private static HashMap<String, String> sIdToSensor;
+    static {
+        sIdToSensor = new HashMap<>();
+        sIdToSensor.put("gina", "158d000159c447");
+        sIdToSensor.put("door", "158d00015a9488");
+    }
+
     public HomeStateFetchService() {
     }
 
@@ -85,6 +92,7 @@ public class HomeStateFetchService extends Service {
         JSONArray sockets = null;
         JSONObject persons = null;
         JSONObject tempData = null;
+        JSONObject xiaomiData = null;
         String image = null;
         String camImage = null;
 
@@ -104,6 +112,11 @@ public class HomeStateFetchService extends Service {
                 Log.d(LOG_TAG, "tempData: "+tempData);
             }
 
+            if (state.has("xiaomiData")) {
+                xiaomiData = state.getJSONObject("xiaomiData");
+                Log.d(LOG_TAG, "xiaomiData: "+xiaomiData);
+            }
+
             if (state.has("image")) {
                 image = state.getString("image");
             }
@@ -116,7 +129,7 @@ public class HomeStateFetchService extends Service {
             Log.e(LOG_TAG, "error processing state: "+state, e);
         }
         finally {
-            insertStateToDb(context, sockets, persons, tempData, image, camImage);
+            insertStateToDb(context, sockets, persons, tempData, image, camImage, xiaomiData);
         }
 
         Log.d(LOG_TAG, "stopping service now...");
@@ -139,7 +152,8 @@ public class HomeStateFetchService extends Service {
                                        JSONObject persons,
                                        JSONObject tempData,
                                        String image,
-                                       String camImage) {
+                                       String camImage,
+                                       JSONObject xiaomiData) {
 
         Log.d(LOG_TAG, "insertStateToDb started");
         ContentValues values = new ContentValues();
@@ -149,6 +163,12 @@ public class HomeStateFetchService extends Service {
 
             JSONObject sofaLamp = getLampObject(sockets, sLampNameToMac.get("sofaLamp"));
             JSONObject windowLamp = getLampObject(sockets, sLampNameToMac.get("windowLamp"));
+
+            JSONObject doorObject = getXiaomiObject(xiaomiData, "door");
+            JSONObject ginaObject = getXiaomiObject(xiaomiData, "gina");
+
+            Log.d(LOG_TAG, "doorObject: "+doorObject);
+            Log.d(LOG_TAG, "ginaObject: "+ginaObject);
 
             Date current = new Date();
             values.put(HomeTableColumns.LAST_UPDATE_TIME, current.getTime());
@@ -162,6 +182,10 @@ public class HomeStateFetchService extends Service {
             values.put(HomeTableColumns.YIFAT_PRESENCE, yifatInfo[0]);
             values.put(HomeTableColumns.ORI_LAST_PRESENCE, oriInfo[1]);
             values.put(HomeTableColumns.YIFAT_LAST_PRESENCE, yifatInfo[1]);
+            values.put(HomeTableColumns.DOOR_STATUS, doorObject.getString("value"));
+            values.put(HomeTableColumns.DOOR_STATUS_TIME, doorObject.getLong("pubDate"));
+            values.put(HomeTableColumns.GINA_STATUS, ginaObject.getString("value"));
+            values.put(HomeTableColumns.GINA_STATUS_TIME, ginaObject.getLong("pubDate"));
 
             if (tempData != null) {
                 String temperature = tempData.getString("temp");
@@ -190,6 +214,11 @@ public class HomeStateFetchService extends Service {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private static JSONObject getXiaomiObject(JSONObject xiaomiData, String deviceName) throws JSONException {
+        String id = sIdToSensor.get(deviceName);
+        return xiaomiData.getJSONObject(id);
     }
 
     private static JSONObject getLampObject(JSONArray sockets, String macAddess) throws JSONException {
@@ -235,7 +264,7 @@ public class HomeStateFetchService extends Service {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setLargeIcon(decodedByte)/*Notification icon image*/
-                .setSmallIcon(R.drawable.logos_smarthome)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new NotificationCompat.BigPictureStyle()

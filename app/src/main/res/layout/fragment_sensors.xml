@@ -17,14 +17,14 @@
         android:layout_weight="1">
 
         <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="217dp"
-            android:layout_height="328dp"
+            android:id="@+id/doorStatusImagae"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             app:srcCompat="@drawable/closed_filled_rectangular_door" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/doorStatusText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Front Door Open"
@@ -32,7 +32,7 @@
             android:textSize="24sp" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/doorStatusTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="14 minutes ago"
@@ -51,14 +51,14 @@
         android:layout_weight="1">
 
         <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="217dp"
-            android:layout_height="328dp"
+            android:id="@+id/ginaStatusImage"
+            android:layout_width="100dip"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             app:srcCompat="@drawable/opened_window_door_of_glasses" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/ginaStatusText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Gina Window Open"
@@ -66,7 +66,7 @@
             android:textSize="24sp" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/ginaStatusTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="14 minutes ago"

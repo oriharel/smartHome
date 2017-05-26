@@ -103,5 +103,9 @@
     <string name="action_cam_deactivate">Deactivate Cam</string>
     <string name="notifRingtone">notifications_new_message_ringtone</string>
     <string name="sensors">Sensors</string>
+    <string name="doorClosed">Door Closed</string>
+    <string name="doorOpened">Door Open</string>
+    <string name="ginaClosed">Gina Closed</string>
+    <string name="ginaOpened">Gina Open</string>
 
 </resources>
