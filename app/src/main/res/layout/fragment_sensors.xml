@@ -19,9 +19,9 @@
         <ImageView
             android:id="@+id/doorStatusImagae"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="250dip"
             android:layout_gravity="center"
-            app:srcCompat="@drawable/closed_filled_rectangular_door" />
+            app:srcCompat="@drawable/open_door_entrance_256" />
 
         <TextView
             android:id="@+id/doorStatusText"
@@ -53,7 +53,7 @@
         <ImageView
             android:id="@+id/ginaStatusImage"
             android:layout_width="100dip"
-            android:layout_height="wrap_content"
+            android:layout_height="250dip"
             android:layout_gravity="center"
             app:srcCompat="@drawable/opened_window_door_of_glasses" />
 

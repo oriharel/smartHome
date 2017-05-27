@@ -116,7 +116,7 @@ public class SensorsFragment extends Fragment {
 
         }
         else {
-            doorStatusImage.setImageResource(R.drawable.open_door_entrance);
+            doorStatusImage.setImageResource(R.drawable.open_door_entrance_256);
             doorStatusText.setText(R.string.doorOpened);
         }
 

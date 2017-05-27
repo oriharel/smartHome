@@ -46,8 +46,8 @@ public class HomeStateFetchService extends Service {
     private static HashMap<String, String> sIdToSensor;
     static {
         sIdToSensor = new HashMap<>();
-        sIdToSensor.put("gina", "158d000159c447");
-        sIdToSensor.put("door", "158d00015a9488");
+        sIdToSensor.put("door", "158d000159c447");
+        sIdToSensor.put("gina", "158d00015a9488");
     }
 
     public HomeStateFetchService() {
@@ -183,9 +183,17 @@ public class HomeStateFetchService extends Service {
             values.put(HomeTableColumns.ORI_LAST_PRESENCE, oriInfo[1]);
             values.put(HomeTableColumns.YIFAT_LAST_PRESENCE, yifatInfo[1]);
             values.put(HomeTableColumns.DOOR_STATUS, doorObject.getString("value"));
-            values.put(HomeTableColumns.DOOR_STATUS_TIME, doorObject.getLong("pubDate"));
+
+            if (doorObject.has("pubDate")) {
+                values.put(HomeTableColumns.DOOR_STATUS_TIME, doorObject.getLong("pubDate"));
+            }
+
             values.put(HomeTableColumns.GINA_STATUS, ginaObject.getString("value"));
-            values.put(HomeTableColumns.GINA_STATUS_TIME, ginaObject.getLong("pubDate"));
+
+            if (ginaObject.has("pubDate")) {
+                values.put(HomeTableColumns.GINA_STATUS_TIME, ginaObject.getLong("pubDate"));
+            }
+
 
             if (tempData != null) {
                 String temperature = tempData.getString("temp");
