@@ -1,5 +1,9 @@
 package niyo.nfc.com.nfcori.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -76,7 +83,10 @@ public class LightsFragment extends Fragment {
         onButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(LOG_TAG, "onClick called on allOn");
                 act.turnTheLights("on");
+                scaleView(v, 1f, .8f);
+
             }
         });
 
@@ -85,6 +95,7 @@ public class LightsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 act.turnTheLights("off");
+                scaleView(v, 1f, .8f);
             }
         });
 
@@ -93,6 +104,7 @@ public class LightsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 act.turnSingleLight("tallLamp", tallBulb, "Tall Lamp");
+                scaleView(v, 1f, .8f);
             }
         });
 
@@ -101,6 +113,7 @@ public class LightsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 act.turnSingleLight("windowLamp", windowBulb, "Window Lamp");
+                scaleView(v, 1f, .8f);
             }
         });
 
@@ -109,8 +122,27 @@ public class LightsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 act.turnSingleLight("sofaLamp", sofaBulb, "Sofa Lamp");
+                scaleView(v, 1f, .8f);
             }
         });
+    }
+
+    public void scaleView(View v, float startScale, float endScale) {
+
+        ObjectAnimator scaleDown, scaleUp;
+        PropertyValuesHolder pvhSx = PropertyValuesHolder.ofFloat(View.SCALE_X, endScale);
+        PropertyValuesHolder pvhSy = PropertyValuesHolder.ofFloat(View.SCALE_Y, endScale);
+        scaleDown = ObjectAnimator.ofPropertyValuesHolder(v, pvhSx, pvhSy);
+        scaleDown.setDuration(100);
+
+        pvhSx = PropertyValuesHolder.ofFloat(View.SCALE_X, startScale);
+        pvhSy = PropertyValuesHolder.ofFloat(View.SCALE_Y, startScale);
+        scaleUp = ObjectAnimator.ofPropertyValuesHolder(v, pvhSx, pvhSy);
+        scaleUp.setDuration(100);
+
+        AnimatorSet set = new AnimatorSet();
+        set.playSequentially(scaleDown, scaleUp);
+        set.start();
     }
 
     @Override
