@@ -101,9 +101,9 @@ public class Main2Activity extends AppCompatActivity
     public String yifatLastStateTime;
 
     public Boolean doorStatus = false;
-    public Long doorStatusTime = 0L;
+    public Long doorStatusTime = -1L;
     public Boolean ginaStatus = false;
-    public Long ginaStatusTime = 0L;
+    public Long ginaStatusTime = -1L;
 
 
     public String temp;
@@ -479,8 +479,11 @@ public class Main2Activity extends AppCompatActivity
             int doorStatusIndex = cursor.getColumnIndex(HomeTableColumns.DOOR_STATUS);
             if (doorStatusIndex >= 0) {
                 String doorStatusStr = cursor.getString(doorStatusIndex);
-                Log.d(LOG_TAG, "door status is: "+doorStatusStr);
-                doorStatus = doorStatusStr.equals("Closed");
+                if (doorStatusStr != null) {
+                    Log.d(LOG_TAG, "door status is: "+doorStatusStr);
+                    doorStatus = doorStatusStr.equals("Closed");
+                }
+
             }
 
 
@@ -495,9 +498,11 @@ public class Main2Activity extends AppCompatActivity
             int ginaStatusIndex = cursor.getColumnIndex(HomeTableColumns.GINA_STATUS);
             if (ginaStatusIndex >= 0) {
                 String ginaStatusStr = cursor.getString(ginaStatusIndex);
-                ginaStatus = ginaStatusStr.equals("Closed");
-            }
+                if (ginaStatusStr != null) {
+                    ginaStatus = ginaStatusStr.equals("Closed");
+                }
 
+            }
 
             int ginaStatusTimeIndex = cursor.getColumnIndex(HomeTableColumns.GINA_STATUS_TIME);
 

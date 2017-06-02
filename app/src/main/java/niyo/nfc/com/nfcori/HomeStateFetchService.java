@@ -182,17 +182,24 @@ public class HomeStateFetchService extends Service {
             values.put(HomeTableColumns.YIFAT_PRESENCE, yifatInfo[0]);
             values.put(HomeTableColumns.ORI_LAST_PRESENCE, oriInfo[1]);
             values.put(HomeTableColumns.YIFAT_LAST_PRESENCE, yifatInfo[1]);
-            values.put(HomeTableColumns.DOOR_STATUS, doorObject.getString("value"));
+            if (doorObject != null) {
+                values.put(HomeTableColumns.DOOR_STATUS, doorObject.getString("value"));
 
-            if (doorObject.has("pubDate")) {
-                values.put(HomeTableColumns.DOOR_STATUS_TIME, doorObject.getLong("pubDate"));
+                if (doorObject.has("pubDate")) {
+                    values.put(HomeTableColumns.DOOR_STATUS_TIME, doorObject.getLong("pubDate"));
+                }
             }
 
-            values.put(HomeTableColumns.GINA_STATUS, ginaObject.getString("value"));
 
-            if (ginaObject.has("pubDate")) {
-                values.put(HomeTableColumns.GINA_STATUS_TIME, ginaObject.getLong("pubDate"));
+            if (ginaObject != null) {
+                values.put(HomeTableColumns.GINA_STATUS, ginaObject.getString("value"));
+
+                if (ginaObject.has("pubDate")) {
+                    values.put(HomeTableColumns.GINA_STATUS_TIME, ginaObject.getLong("pubDate"));
+                }
             }
+
+
 
 
             if (tempData != null) {
@@ -226,7 +233,13 @@ public class HomeStateFetchService extends Service {
 
     private static JSONObject getXiaomiObject(JSONObject xiaomiData, String deviceName) throws JSONException {
         String id = sIdToSensor.get(deviceName);
-        return xiaomiData.getJSONObject(id);
+        if (xiaomiData.has(id)) {
+            return xiaomiData.getJSONObject(id);
+        }
+        else {
+            return null;
+        }
+
     }
 
     private static JSONObject getLampObject(JSONArray sockets, String macAddess) throws JSONException {

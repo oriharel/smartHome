@@ -18,7 +18,7 @@ public class Utils {
     public static final String LOG_TAG = Utils.class.getSimpleName();
 
     public static final String HOME_INNER_URL = "http://10.0.0.8:6367";
-    public static final String HOME_OUTER_URL = "https://harel.ddns.net";
+    public static final String HOME_OUTER_URL = "http://harel.ddns.net";
     /**
      * Convert byte array to hex string
      * @param bytes
