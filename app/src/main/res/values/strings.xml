@@ -107,5 +107,13 @@
     <string name="doorOpened">Door Open</string>
     <string name="ginaClosed">Gina Closed</string>
     <string name="ginaOpened">Gina Open</string>
+    <string name="personArrives">person_arrives</string>
+    <string name="pref_title_person_arrives">Person Arrvies</string>
+    <string name="personLeaves">person_leaves</string>
+    <string name="pref_title_person_leaves">Person Leaves</string>
+    <string name="lightsOn">lights_on</string>
+    <string name="pref_title_lights_on">Lights On</string>
+    <string name="lightsOff">lights_off</string>
+    <string name="pref_title_lights_off">Lights Off</string>
 
 </resources>

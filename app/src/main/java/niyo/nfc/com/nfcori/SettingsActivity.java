@@ -233,7 +233,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("notifications_new_message"));
-            bindPreferenceSummaryToValue(findPreference(getResources().getString(R.string.notifRingtone)));
+            bindPreferenceSummaryToValue(findPreference(getResources().getString(R.string.personArrives)));
+            bindPreferenceSummaryToValue(findPreference(getResources().getString(R.string.personLeaves)));
+            bindPreferenceSummaryToValue(findPreference(getResources().getString(R.string.lightsOn)));
+            bindPreferenceSummaryToValue(findPreference(getResources().getString(R.string.lightsOff)));
         }
 
         @Override

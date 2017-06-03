@@ -277,15 +277,15 @@ public class HomeStateFetchService extends Service {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String userRingtoneStr = prefs.getString(context.getResources().
-                getString(R.string.notifRingtone), null);
+        String notifType = getEventType(body, context);
+        String userRingtoneStr = prefs.getString(notifType, null);
         if (userRingtoneStr != null) {
             defaultSoundUri = Uri.parse(userRingtoneStr);
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setLargeIcon(decodedByte)/*Notification icon image*/
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.on_bulb)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new NotificationCompat.BigPictureStyle()
@@ -298,5 +298,25 @@ public class HomeStateFetchService extends Service {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(76 /* ID of notification */, notificationBuilder.build());
+    }
+
+    private static String getEventType(String body, Context context) {
+
+        if (body.toLowerCase().contains("on")) {
+            return context.getResources().getString(R.string.lightsOn);
+        }
+        if (body.toLowerCase().contains("off")) {
+            return context.getResources().getString(R.string.lightsOff);
+        }
+        if (body.toLowerCase().contains("home")) {
+            return context.getResources().getString(R.string.personArrives);
+        }
+        if (body.toLowerCase().contains("away")) {
+            return context.getResources().getString(R.string.personLeaves);
+        }
+        else {
+            return context.getResources().getString(R.string.personArrives);
+        }
+
     }
 }
