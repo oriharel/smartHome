@@ -315,7 +315,7 @@ public class HomeStateFetchService extends Service {
             return context.getResources().getString(R.string.personLeaves);
         }
         else {
-            return context.getResources().getString(R.string.personArrives);
+            return context.getResources().getString(R.string.personLeaves);
         }
 
     }
