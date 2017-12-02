@@ -21,7 +21,7 @@ public class HarelHomeProvider extends ContentProvider {
     private HomeDbHelper _dbHelper;
     private static final String DATABASE_NAME = "harelHome.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     private static final int HOME_STATE = 1;
 
     private static final UriMatcher sUriMatcher;
@@ -52,8 +52,10 @@ public class HarelHomeProvider extends ContentProvider {
         sHomeStateProjectionMap.put(HomeTableColumns.WINDOW_LAMP_STATE, HomeTableColumns.WINDOW_LAMP_STATE);
         sHomeStateProjectionMap.put(HomeTableColumns.ORI_PRESENCE, HomeTableColumns.ORI_PRESENCE);
         sHomeStateProjectionMap.put(HomeTableColumns.YIFAT_PRESENCE, HomeTableColumns.YIFAT_PRESENCE);
+        sHomeStateProjectionMap.put(HomeTableColumns.ITCHUK_PRESENCE, HomeTableColumns.ITCHUK_PRESENCE);
         sHomeStateProjectionMap.put(HomeTableColumns.ORI_LAST_PRESENCE, HomeTableColumns.ORI_LAST_PRESENCE);
         sHomeStateProjectionMap.put(HomeTableColumns.YIFAT_LAST_PRESENCE, HomeTableColumns.YIFAT_LAST_PRESENCE);
+        sHomeStateProjectionMap.put(HomeTableColumns.ITCHUK_LAST_PRESENCE, HomeTableColumns.ITCHUK_LAST_PRESENCE);
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_TEMP, HomeTableColumns.HOME_TEMP);
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_PIC, HomeTableColumns.HOME_PIC);
         sHomeStateProjectionMap.put(HomeTableColumns.HOME_CAM_PIC, HomeTableColumns.HOME_CAM_PIC);

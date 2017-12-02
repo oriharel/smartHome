@@ -9,5 +9,7 @@ public abstract class PresenceStateListener {
                                   String oriSince,
                                   Boolean yifatState,
                                   String yifatSince,
+                                  Boolean itchukState,
+                                  String itchukSince,
                                   String lastUpdateTime);
 }

@@ -32,6 +32,8 @@ public class HomeDbHelper extends SQLiteOpenHelper {
                     + HomeTableColumns.DOOR_STATUS_TIME + " BIGINT,"
                     + HomeTableColumns.GINA_STATUS + " BOOLEAN,"
                     + HomeTableColumns.GINA_STATUS_TIME + " BIGINT,"
+                    + HomeTableColumns.ITCHUK_PRESENCE + " TEXT,"
+                    + HomeTableColumns.ITCHUK_LAST_PRESENCE + " DATE,"
                     + HomeTableColumns.HOME_CAM_PIC + " BLOB);";
 
     public HomeDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
@@ -49,5 +51,7 @@ public class HomeDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         Log.d(LOG_TAG, "onUpdate...");
+        sqLiteDatabase.execSQL("DROP TABLE "+HOME_TABLE);
+        sqLiteDatabase.execSQL(TABLE_HOME_CREATE);
     }
 }

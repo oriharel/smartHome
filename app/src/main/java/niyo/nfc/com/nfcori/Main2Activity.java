@@ -96,9 +96,11 @@ public class Main2Activity extends AppCompatActivity
 
     public Boolean oriState;
     public Boolean yifatState;
+    public Boolean itchukState;
 
     public String oriLastStateTime;
     public String yifatLastStateTime;
+    public String itchukLastStateTime;
 
     public Boolean doorStatus = false;
     public Long doorStatusTime = -1L;
@@ -272,14 +274,17 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void setUpSync() {
+        Log.d(LOG_TAG, "setUpSync started");
         AccountManager accountManager =
                 (AccountManager) getSystemService(
                         ACCOUNT_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS}, MY_PERMISSIONS_REQUEST_GET_ACCOUNTS);
+            Log.d(LOG_TAG, "need user to authorize get accounts");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS},
+                    MY_PERMISSIONS_REQUEST_GET_ACCOUNTS);
         } else {
+            Log.d(LOG_TAG, "get accounts permission already granted");
             Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
 
             ContentResolver.setSyncAutomatically(accounts[0], AUTHORITY, true);
@@ -460,6 +465,13 @@ public class Main2Activity extends AppCompatActivity
             int yifatLastIndex = cursor.getColumnIndex(HomeTableColumns.YIFAT_LAST_PRESENCE);
             yifatLastStateTime = cursor.getString(yifatLastIndex);
 
+            int itchukPresIndex = cursor.getColumnIndex(HomeTableColumns.ITCHUK_PRESENCE);
+            String itchukStateStr = cursor.getString(itchukPresIndex);
+            itchukState = itchukStateStr.toLowerCase().equals("home");
+
+            int itchukLastIndex = cursor.getColumnIndex(HomeTableColumns.ITCHUK_LAST_PRESENCE);
+            itchukLastStateTime = cursor.getString(itchukLastIndex);
+
             int lastUpdateIndex = cursor.getColumnIndex(HomeTableColumns.LAST_UPDATE_TIME);
             lastUpdateTime = cursor.getString(lastUpdateIndex);
 
@@ -522,7 +534,14 @@ public class Main2Activity extends AppCompatActivity
 
             for (PresenceStateListener listener :
                     mPresenceListeners) {
-                listener.onChange(oriState, oriLastStateTime, yifatState, yifatLastStateTime, lastUpdateTime);
+                listener.onChange(
+                        oriState,
+                        oriLastStateTime,
+                        yifatState,
+                        yifatLastStateTime,
+                        itchukState,
+                        itchukLastStateTime,
+                        lastUpdateTime);
             }
 
             for (CameraStateListener listener :

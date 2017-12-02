@@ -178,10 +178,13 @@ public class HomeStateFetchService extends Service {
 
             String[] oriInfo = persons.getString("Ori").split(": ");
             String[] yifatInfo = persons.getString("Yifat").split(": ");
+            String[] itchukInfo = persons.getString("Itchuk").split(": ");
             values.put(HomeTableColumns.ORI_PRESENCE, oriInfo[0]);
             values.put(HomeTableColumns.YIFAT_PRESENCE, yifatInfo[0]);
+            values.put(HomeTableColumns.ITCHUK_PRESENCE, itchukInfo[0]);
             values.put(HomeTableColumns.ORI_LAST_PRESENCE, oriInfo[1]);
             values.put(HomeTableColumns.YIFAT_LAST_PRESENCE, yifatInfo[1]);
+            values.put(HomeTableColumns.ITCHUK_LAST_PRESENCE, itchukInfo[1]);
             if (doorObject != null) {
                 values.put(HomeTableColumns.DOOR_STATUS, doorObject.getString("value"));
 
@@ -233,7 +236,7 @@ public class HomeStateFetchService extends Service {
 
     private static JSONObject getXiaomiObject(JSONObject xiaomiData, String deviceName) throws JSONException {
         String id = sIdToSensor.get(deviceName);
-        if (xiaomiData.has(id)) {
+        if (xiaomiData != null && xiaomiData.has(id)) {
             return xiaomiData.getJSONObject(id);
         }
         else {

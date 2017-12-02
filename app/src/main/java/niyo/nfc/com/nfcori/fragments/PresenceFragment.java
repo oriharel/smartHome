@@ -94,7 +94,15 @@ public class PresenceFragment extends Fragment {
         Main2Activity act = (Main2Activity)getActivity();
         Log.d(LOG_TAG, "tallLampState is: "+act.tallLampState);
 
-        updateViews(view, act.oriState, act.oriLastStateTime, act.yifatState, act.yifatLastStateTime, act.lastUpdateTime);
+        updateViews(view,
+                act.oriState,
+                act.oriLastStateTime,
+                act.yifatState,
+                act.yifatLastStateTime,
+                act.itchukState,
+                act.itchukLastStateTime,
+                act.lastUpdateTime
+        );
 
         act.registerForPresenceChange(new PresenceStateListener() {
             @Override
@@ -102,18 +110,30 @@ public class PresenceFragment extends Fragment {
                                  String oriSince,
                                  Boolean yifatState,
                                  String yifatSince,
+                                 Boolean itchukState,
+                                 String itchukSince,
                                  String lastUpdateTime) {
-                updateViews(view, oriState, oriSince, yifatState, yifatSince, lastUpdateTime);
+                updateViews(view,
+                        oriState,
+                        oriSince,
+                        yifatState,
+                        yifatSince,
+                        itchukState,
+                        itchukSince,
+                        lastUpdateTime
+                );
             }
         });
 
         ImageView oriImage = (ImageView)view.findViewById(R.id.oriImageView);
         ImageView yifatImage = (ImageView)view.findViewById(R.id.yifatImageView);
+        ImageView itchukImage = (ImageView)view.findViewById(R.id.itchukImageView);
 
 
 
         oriImage.setImageBitmap(getRoundImageBitmap(R.drawable.ori));
         yifatImage.setImageBitmap(getRoundImageBitmap(R.drawable.yifat));
+        itchukImage.setImageBitmap(getRoundImageBitmap(R.drawable.itchuk));
 
 
         return view;
@@ -198,6 +218,8 @@ public class PresenceFragment extends Fragment {
                              String oriSince,
                              Boolean yifatState,
                              String yifatSince,
+                             Boolean itchukState,
+                             String itchukSince,
                              String lastUpdate) {
         TextView oriText = (TextView)view.findViewById(R.id.oriState);
         setTextView(oriText, oriState);
@@ -209,6 +231,11 @@ public class PresenceFragment extends Fragment {
         setTextView(yifatText, yifatState);
         TextView yifatSinceView = (TextView)view.findViewById(R.id.yifatSince);
         yifatSinceView.setText("Since "+yifatSince);
+
+        TextView itchukText = (TextView)view.findViewById(R.id.itchukState);
+        setTextView(itchukText, itchukState);
+        TextView itchukSinceView = (TextView)view.findViewById(R.id.itchukSince);
+        itchukSinceView.setText("Since "+itchukSince);
 
         if (lastUpdate != null) {
             TextView lastUpdateView = (TextView)view.findViewById(R.id.lastUpdate);
