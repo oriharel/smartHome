@@ -171,10 +171,16 @@ public class HomeStateFetchService extends Service {
             Log.d(LOG_TAG, "ginaObject: "+ginaObject);
 
             Date current = new Date();
-            values.put(HomeTableColumns.LAST_UPDATE_TIME, current.getTime());
-            values.put(HomeTableColumns.TALL_LAMP_STATE, tallLamp.getString("state"));
-            values.put(HomeTableColumns.SOFA_LAMP_STATE, sofaLamp.getString("state"));
-            values.put(HomeTableColumns.WINDOW_LAMP_STATE, windowLamp.getString("state"));
+            try {
+                values.put(HomeTableColumns.LAST_UPDATE_TIME, current.getTime());
+                values.put(HomeTableColumns.TALL_LAMP_STATE, tallLamp.getString("state"));
+                values.put(HomeTableColumns.SOFA_LAMP_STATE, sofaLamp.getString("state"));
+                values.put(HomeTableColumns.WINDOW_LAMP_STATE, windowLamp.getString("state"));
+            }
+            catch (Exception e) {
+                Log.d(LOG_TAG, "Exception in JSON");
+            }
+
 
             String[] oriInfo = persons.getString("Ori").split(": ");
             String[] yifatInfo = persons.getString("Yifat").split(": ");
