@@ -279,10 +279,13 @@ public class HomeStateFetchService extends Service {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
+        Bitmap decodedByte = null;
 
-        byte[] camHomeImage64 = camImage.getBytes();
-        byte[] decodedString = Base64.decode(camHomeImage64, Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        if (camImage != null) {
+            byte[] camHomeImage64 = camImage.getBytes();
+            byte[] decodedString = Base64.decode(camHomeImage64, Base64.DEFAULT);
+            decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        }
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -293,7 +296,6 @@ public class HomeStateFetchService extends Service {
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                .setLargeIcon(decodedByte)/*Notification icon image*/
                 .setSmallIcon(R.drawable.on_bulb)
                 .setContentTitle(title)
                 .setContentText(body)
@@ -302,6 +304,9 @@ public class HomeStateFetchService extends Service {
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
+        if (decodedByte != null) {
+            notificationBuilder.setLargeIcon(decodedByte);
+        }
 
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
